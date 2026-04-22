@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 export default function Chat() {
   const [fileOpen, setFileOpen] = useState(true); // true يعني الملف ظاهر
@@ -51,7 +52,7 @@ const [thinkingStep, setThinkingStep] = useState("");
         throw new Error("Server error");
       }
       const data = await res.json();
-
+ await new Promise((r) => setTimeout(r, 10000));
       // السيرفر ممكن يرد بأي اسم مفتاح
       const sum = data.summary;
 
@@ -168,6 +169,8 @@ async function sendQuestion() {
         throw new Error("Server error");
       }
       const data = await res.json();
+         
+
       if (data.chats) {
         const history = data.chats.flatMap((c) => [
           { role: "user", content: c.question },
@@ -194,13 +197,13 @@ async function sendQuestion() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  if (loadingSummary) {
-    return (
-      <div className="full-loader">
-        <ClipLoader size={50} />
-      </div>
-    );
-  }
+  // if (loadingSummary) {
+  //   return (
+  //     <div className="full-loader">
+  //       <ClipLoader size={50} />
+  //     </div>
+  //   );
+  // }
 
   if (summaryError) {
     return (
@@ -211,6 +214,15 @@ async function sendQuestion() {
   }
   return (
     <div className="chat">
+      {loadingSummary && (
+  <div className="full-loader">
+    <DotLottieReact
+      src="https://lottie.host/afa7c5f2-bac0-4f2a-8108-dee8a3d7386f/AzpDjgiBm8.lottie"
+      loop
+      autoplay
+    />
+  </div>
+)}
       <input
         type="file"
         hidden

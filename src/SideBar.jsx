@@ -22,99 +22,89 @@ import {
 import logoo from "./assets/logoo.svg";
 
 export default function Sidebar() {
-  const { dragtext, setDragtext } = useContext(DragTextContext);
+  const { setDragtext } = useContext(DragTextContext);
   const { user } = useContext(AuthContext);
-  const GENERAL_CATEGORY_ID = "69e65b0b17c6dbad8a7757b1";
-  const [generalFiles, setGeneralFiles] = useState([]);
   const navigate = useNavigate();
   const accessToken = localStorage.getItem("accessToken");
+
+  const {
+    pdfFiles,
+    setPdfFiles,
+    csvFiles,
+    setCsvFiles,
+    recentFiles,
+    setRecentFiles,
+    fetchRecentFiles,
+    fetchGeneralFiles,
+    categories,
+    categoryFiles,
+    fetchCategories,
+    fetchCategoryFiles,
+    optimisticAddFileToCategory,
+    optimisticRemoveFile, // ← NEW
+  } = useContext(FileContext);
+
+  const [openSections, setOpenSections] = useState({});
   const [openFiles, setOpenFiles] = useState(false);
-  const [openCat1, setOpenCat1] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [AddingCategoryModal, setAddingCategoryModal] = useState(false);
+  const [addingCategoryModal, setAddingCategoryModal] = useState(false);
   const [open, setOpen] = useState(false);
+  const [activeFileIndex, setActiveFileIndex] = useState(null);
+  const [menuOpenIndex, setMenuOpenIndex] = useState(null);
+  const [uploadTargetCategory, setUploadTargetCategory] = useState(null);
+
   const dropdownRef = useRef();
-  const [recent, setRecent] = useState([]);
-  const { pdfFiles, setPdfFiles, csvFiles, setCsvFiles } =
-    useContext(FileContext);
-  const [activeFileIndex, setActiveFileIndex] = useState(null); // للـhover
-  const [menuOpenIndex, setMenuOpenIndex] = useState(null); // للقائمة المفتوحة
+  const fileInputRef = useRef();
+  const catFileInputRef = useRef();
 
-  //Effects
+  // ── Bootstrap ──────────────────────────────────────────────────────────
 
-  //get general caregory files
-const fetchGeneralFiles = async () => {
-  try {
-    const res = await fetch(
-      `http://localhost:3000/upload/files/${GENERAL_CATEGORY_ID}`,
-      {
-        headers: {
-          Authorization: `bearer ${accessToken}`,
-        },
-      }
-    );
+  useEffect(() => {
+    fetchRecentFiles(accessToken);
+    fetchCategories(accessToken);
+  }, [accessToken]);
 
-    const data = await res.json();
+  useEffect(() => {
+    fetchRecentFiles(accessToken);
+  }, [pdfFiles, csvFiles]);
 
-    if (data.filesWithUrls) {
-      setGeneralFiles(data.filesWithUrls);
-    }
-  } catch (err) {
-    console.error(err);
-  }
-};
-useEffect(() => {
-  const handler = () => {
-    fetchGeneralFiles();
-  };
+  useEffect(() => {
+    const onRecent = () => fetchRecentFiles(accessToken);
+    const onGeneral = () => fetchGeneralFiles(accessToken);
+    const onCategories = () => fetchCategories(accessToken);
+    window.addEventListener("recent-update", onRecent);
+    window.addEventListener("general-update", onGeneral);
+    window.addEventListener("categories-update", onCategories);
+    return () => {
+      window.removeEventListener("recent-update", onRecent);
+      window.removeEventListener("general-update", onGeneral);
+      window.removeEventListener("categories-update", onCategories);
+    };
+  }, [accessToken, fetchRecentFiles, fetchGeneralFiles, fetchCategories]);
 
-  window.addEventListener("general-update", handler);
-
-  return () => {
-    window.removeEventListener("general-update", handler);
-  };
-}, []);
-useEffect(() => {
-  if (accessToken && GENERAL_CATEGORY_ID) {
-    fetchGeneralFiles();
-  }
-}, [accessToken, GENERAL_CATEGORY_ID,pdfFiles, csvFiles]);
-
-  //recent files
-const fetchRecent = async () => {
-  try {
-    const res = await fetch("http://localhost:3000/upload/recent", {
-      headers: { Authorization: `bearer ${accessToken}` },
-    });
-
-    const data = await res.json();
-
-    console.log("recent data:", data);
-
-    if (data.files) setRecent(() => data.files || []);
-  } catch (err) {
-    console.error(err);
-  }
-};
-  // --- Effects ---
-useEffect(() => {
-  fetchRecent();
-}, [accessToken,pdfFiles, csvFiles]);
-
-  //click outside
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target))
         setOpen(false);
-      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // ── Helpers ────────────────────────────────────────────────────────────
+
+  function toggleSection(id) {
+    setOpenSections((prev) => {
+      const willOpen = !prev[id];
+      if (willOpen && !categoryFiles[id]) fetchCategoryFiles(accessToken, id);
+      return { ...prev, [id]: willOpen };
+    });
+  }
+
+  // ── Logout ─────────────────────────────────────────────────────────────
+
   async function handleLogout() {
     const token = localStorage.getItem("accessToken");
-
     try {
       await fetch("http://localhost:3000/logout", {
         method: "POST",
@@ -122,80 +112,188 @@ useEffect(() => {
           "Content-Type": "application/json",
           Authorization: `bearer ${token}`,
         },
-        body: JSON.stringify({
-          flag: "current",
-        }),
+        body: JSON.stringify({ flag: "current" }),
       });
-    } catch (err) {
-      console.log("logout API failed, but continuing...");
+    } catch {
+      /* continue */
     }
-
-    // مهم جدًا حتى لو الـ API فشل
     localStorage.removeItem("accessToken");
     window.location.href = "/login";
   }
 
-  
-  // 👇 يقفل لما تدوسي برا
-  
-  const fileInputRef = useRef(); // 👈 ده المهم
+  // ── Upload inside a category ───────────────────────────────────────────
 
-  // 👇 لما تضغطي على الزرار
-  const handleUploadClick = () => {
-    fileInputRef.current.click();
+  const handleCategoryUploadClick = (categoryId) => {
+    setUploadTargetCategory(categoryId);
+    catFileInputRef.current.value = null;
+    catFileInputRef.current.click();
   };
 
-  // 👇 لما تختاري فايل
-  const handleFileChange = async (e) => {
-    setDragtext("Uploading file...");
+  const handleCategoryFileChange = async (e) => {
     const file = e.target.files[0];
+    if (!file) return;
+    const targetId = uploadTargetCategory;
+    if (!targetId) return;
 
-    if (file) {
-      const formData = new FormData();
-      formData.append("file", file);
+    const formData = new FormData();
+    formData.append("file", file);
 
-      try {
-        const res = await fetch("http://localhost:3000/upload/", {
+    try {
+      const res = await fetch(
+        `http://localhost:3000/upload/addFile/${targetId}`,
+        {
           method: "POST",
           body: formData,
-          headers: {
-            Authorization: `bearer ${accessToken}`,
-          },
-        });
-        const data = await res.json();
-       
-        if (res.ok) {
-          const uploadedFile = data.files && data.files[0];
+          headers: { Authorization: `bearer ${accessToken}` },
+        },
+      );
+      const data = await res.json();
 
-          if (uploadedFile) {
-            // ركزي هنا: بنخلي الـ Object الجديد مطابق تماماً للي بيرجع من fetchRecent
-            const newFile = {
-              ...uploadedFile, // بننزل كل الداتا اللي جاية من السيرفر (_id, url, إلخ)
-              fileName: uploadedFile.fileName || file.name,
-              fileType: file.name.endsWith(".csv") ? "csv" : "pdf",
-            };
-
-            // setRecent((prev) => [newFile, ...prev]);
-
-    // ✅ بعدين optional refetch
-    await fetchRecent();
-            setOpenFiles(true);
-            setDragtext("File uploaded successfully!");
-          }
+      if (res.ok) {
+        const uploaded = data.file || data.pdf || data.CSV;
+        if (uploaded) {
+          optimisticAddFileToCategory(targetId, {
+            _id: uploaded._id,
+            fileName: file.name,
+            fileType: uploaded.fileType || "pdf",
+            url: uploaded.url || "",
+            createdAt: uploaded.createdAt || new Date().toISOString(),
+          });
         } else {
-          setDragtext("Upload failed: " + (data.message || "Unknown error"));
+          fetchCategoryFiles(accessToken, targetId);
         }
-      } catch (err) {
-        console.error("Upload Error:", err);
-        setDragtext("Upload failed.");
+        window.dispatchEvent(new Event("recent-update"));
       }
+    } catch (err) {
+      console.error(err);
     }
+
     e.target.value = null;
+    setUploadTargetCategory(null);
   };
-function handleLogoClick() {
-  navigate("/home");
-  window.location.reload(); // reload كامل للصفحة
-}
+
+  // ── Delete file ────────────────────────────────────────────────────────
+
+  // async function handleDeleteFile(file) {
+  //   const fileId = file._id || file.id;
+  //   if (!fileId) return;
+
+  //   // ── optimistic: remove from ALL lists instantly ──────────────────────
+  //   optimisticRemoveFile(fileId);
+
+  //   // also clean pdfFiles / csvFiles state
+  //   if (file.fileType === "csv" || file.type === "csv") {
+  //     setCsvFiles((prev) => prev.filter((f) => (f._id || f.id) !== fileId));
+  //   } else {
+  //     setPdfFiles((prev) => prev.filter((f) => (f._id || f.id) !== fileId));
+  //   }
+  //   setMenuOpenIndex(null);
+
+  //   // fire API in background
+  //   try {
+  //     const res = await fetch(`http://localhost:3000/upload/delete/${fileId}`, {
+  //       method: "DELETE",
+  //       headers: { Authorization: `bearer ${accessToken}` },
+  //     });
+  //     if (!res.ok) {
+  //       // rollback: re-fetch everything
+  //       fetchRecentFiles(accessToken);
+  //       fetchGeneralFiles(accessToken);
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //     fetchRecentFiles(accessToken);
+  //     fetchGeneralFiles(accessToken);
+  //   }
+  // }
+  // async function handleDeleteFile(file) {
+  //   const fileId = file._id || file.id;
+  //   if (!fileId) return;
+
+  //   // 1. close the menu first
+  //   setMenuOpenIndex(null);
+
+  //   // 2. wait one tick so React re-renders the closed menu before mutating state
+  //   await new Promise((r) => setTimeout(r, 0));
+
+  //   // 3. optimistic: remove from ALL lists instantly
+  //   optimisticRemoveFile(fileId);
+
+  //   // 4. clean pdfFiles / csvFiles state
+  //   if (file.fileType === "csv" || file.type === "csv") {
+  //     setCsvFiles((prev) => prev.filter((f) => (f._id || f.id) !== fileId));
+  //   } else {
+  //     setPdfFiles((prev) => prev.filter((f) => (f._id || f.id) !== fileId));
+  //   }
+
+  //   // 5. fire API in background
+  //   try {
+  //     const res = await fetch(`http://localhost:3000/upload/delete/${fileId}`, {
+  //       method: "DELETE",
+  //       headers: { Authorization: `bearer ${accessToken}` },
+  //     });
+  //     if (!res.ok) {
+  //       fetchRecentFiles(accessToken);
+  //       fetchGeneralFiles(accessToken);
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //     fetchRecentFiles(accessToken);
+  //     fetchGeneralFiles(accessToken);
+  //   }
+  // }
+  // async function handleDeleteFile(file) {
+  //     const fileId = file._id || file.id;
+  //     if (!fileId) return;
+
+  //     try {
+  //       const res = await fetch(`http://localhost:3000/upload/delete/${fileId}`, {
+  //         method: "DELETE",
+  //         headers: { Authorization: `bearer ${accessToken}` },
+  //       });
+  //       if (!res.ok) throw new Error("Delete failed");
+
+  //       setRecentFiles((prev) => prev.filter((f) => (f._id || f.id) !== fileId));
+  //       if (file.fileType === "csv" || file.type === "csv") {
+  //         setCsvFiles((prev) => prev.filter((f) => (f._id || f.id) !== fileId));
+  //       } else {
+  //         setPdfFiles((prev) => prev.filter((f) => (f._id || f.id) !== fileId));
+  //       }
+  //       window.dispatchEvent(new Event("recent-update"));
+  //       setMenuOpenIndex(null);
+  //     } catch (err) { console.error(err); }
+  //   }
+
+  async function handleDeleteFile(file) {
+    const fileId = file._id || file.id;
+    if (!fileId) return;
+
+    // optimistic UI
+    optimisticRemoveFile(fileId);
+    setMenuOpenIndex(null);
+
+    try {
+      const res = await fetch(`http://localhost:3000/upload/delete/${fileId}`, {
+        method: "DELETE",
+        headers: { Authorization: `bearer ${accessToken}` },
+      });
+
+      if (!res.ok) throw new Error();
+    } catch (err) {
+      console.error(err);
+
+      // rollback
+      fetchRecentFiles(accessToken);
+      fetchGeneralFiles(accessToken);
+    }
+  }
+  function handleLogoClick() {
+    navigate("/home");
+    window.location.reload();
+  }
+
+  // ── Render ─────────────────────────────────────────────────────────────
+
   return (
     <div className="sidebar">
       {showLogoutModal && (
@@ -205,16 +303,10 @@ function handleLogoClick() {
         >
           <div className="modal-l" onClick={(e) => e.stopPropagation()}>
             <h3>Are you sure you want to log out?</h3>
-
-            {/* <p>
-        Log out of your account? You’ll need to sign in again to continue.
-      </p> */}
-
             <div className="modal-actions-l">
               <button className="logout-btn-l" onClick={handleLogout}>
                 Log out
               </button>
-
               <button
                 className="cancel-btn-l"
                 onClick={() => setShowLogoutModal(false)}
@@ -225,41 +317,49 @@ function handleLogoClick() {
           </div>
         </div>
       )}
+
+      <input type="file" ref={fileInputRef} style={{ display: "none" }} />
       <input
         type="file"
-        ref={fileInputRef}
+        ref={catFileInputRef}
         style={{ display: "none" }}
-        onChange={handleFileChange}
+        onChange={handleCategoryFileChange}
       />
+
       <div className="sidecontent">
         <div className="logo-box">
-          <img src={logoo} alt="Logo" className="logo" onClick={handleLogoClick} />
+          <img
+            src={logoo}
+            alt="Logo"
+            className="logo"
+            onClick={handleLogoClick}
+          />
         </div>
+
         <div className="links">
           <div className="user">
             <div
               className={`username ${open ? "active" : ""}`}
               onClick={() => setOpen(!open)}
             >
-              <div> {user?.userName || user?.email?.split("@")[0]}</div>
+              <div>{user?.userName || user?.email?.split("@")[0]}</div>
               <div>
                 {open ? <ChevronDown size={17} /> : <ChevronRight size={17} />}
               </div>
             </div>
-
             <div
               onClick={() => navigate("/search")}
               style={{ cursor: "pointer" }}
             >
-              {" "}
               <Search size={17} />
             </div>
           </div>
+
           {open && (
-            <div className="dropdown">
+            <div className="dropdown" ref={dropdownRef}>
               <span style={{ fontWeight: "600" }}>
                 {user?.userName || user?.email?.split("@")[0]}
-              </span>{" "}
+              </span>
               <span style={{ fontWeight: "600", color: "#666666" }}>
                 {user.email}
               </span>
@@ -281,24 +381,24 @@ function handleLogoClick() {
               </div>
             </div>
           )}
+
           <NavLink to="/home" className="home-link">
             <House size={18} />
             Home
-          </NavLink>{" "}
+          </NavLink>
           <NavLink to="/categories" className="category-link">
             <LayoutGrid size={18} />
             categories
-          </NavLink>{" "}
+          </NavLink>
         </div>
+
         <div className="files">
           <h4 className="private">my collections</h4>
           <div
-            style={{
-              marginLeft: "14px",
-              paddingTop: "16px",
-            }}
+            style={{ marginLeft: "14px", paddingTop: "16px" }}
             className="collection"
           >
+            {/* ── All Files ── */}
             <div
               className="files-header"
               onClick={() => setOpenFiles(!openFiles)}
@@ -307,7 +407,6 @@ function handleLogoClick() {
                 alignItems: "center",
                 cursor: "pointer",
                 marginBottom: "10px",
-                // padding: "8px",
               }}
             >
               <ChevronRight
@@ -320,281 +419,195 @@ function handleLogoClick() {
               <span>All Files</span>
             </div>
 
-            {/* المحتوى */}
             {openFiles && (
               <div className="files-content">
-                {recent.length === 0
-                  ? ""
-                  : recent.map((file, index) => {
-                      const isCSV =
-                        file.fileName?.endsWith(".csv") ||
-                        file.type === "csv" ||
-                        file.fileType === "csv";
-                      const nameToShow =
-                        file.fileName || file.name || "Untitled File";
-                      // const name =
-                      //   file.name ||
-                      //   file.fileName ||
-                      //   (file.url && file.url.split("\\").pop());
-                      // const shortName =
-                      //   name.length > 10 ? name.slice(0, 10) + "..." : name;
-                      const shortName =
-                        nameToShow.length > 15
-                          ? nameToShow.slice(0, 15) + "..."
-                          : nameToShow;
-                      const hovered = activeFileIndex === index;
-                      const menuOpen = menuOpenIndex === index;
+                {recentFiles.length === 0 && (
+                  <div
+                    style={{
+                      fontSize: "12px",
+                      color: "#999",
+                      marginBottom: "6px",
+                      paddingLeft: "4px",
+                    }}
+                  >
+                    No files yet
+                  </div>
+                )}
+                {recentFiles.map((file, index) => {
+                  const isCSV =
+                    file.fileName?.endsWith(".csv") ||
+                    file.type === "csv" ||
+                    file.fileType === "csv";
+                  const nameToShow =
+                    file.fileName || file.name || "Untitled File";
+                  const shortName =
+                    nameToShow.length > 15
+                      ? nameToShow.slice(0, 15) + "..."
+                      : nameToShow;
+                  const hovered = activeFileIndex === index;
+                  const menuOpen = menuOpenIndex === index;
 
-                      return (
-                        <div
-                          key={file._id || index}
-                          className="file-item"
-                          style={{ position: "relative", cursor: "pointer" }}
-                          onMouseEnter={() => setActiveFileIndex(index)}
-                          onMouseLeave={() => setActiveFileIndex(null)}
-                          onClick={() => {
-                            if (menuOpenIndex !== null) return; // 👈 مهم جدًا
+                  return (
+                    <div
+                      key={file._id || index}
+                      className="file-item"
+                      style={{ position: "relative", cursor: "pointer" }}
+                      onMouseEnter={() => setActiveFileIndex(index)}
+                      onMouseLeave={() => setActiveFileIndex(null)}
+                      onClick={() => {
+                        if (menuOpenIndex !== null) return;
+                        navigate(isCSV ? "/dashboard" : "/chat", {
+                          state: {
+                            fileUrl: file.url,
+                            fileId: file._id,
+                            accessToken,
+                          },
+                        });
+                      }}
+                    >
+                      {isCSV ? (
+                        <ChartColumn size={20} />
+                      ) : (
+                        <FileText size={20} />
+                      )}
+                      {shortName}
 
-                            const isCSV =
-                              file.fileName?.endsWith(".csv") ||
-                              file.type === "csv" ||
-                              file.fileType === "csv";
-
-                            navigate(isCSV ? "/dashboard" : "/chat", {
-                              state: {
-                                fileUrl: file.url,
-                                fileId: file._id,
-                                accessToken,
-                              },
-                            });
+                      {hovered && !menuOpen && (
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            right: 0,
+                            color: "#000",
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setMenuOpenIndex(
+                              menuOpenIndex === index ? null : index,
+                            );
                           }}
                         >
-                          {isCSV ? (
-                            <ChartColumn size={20} />
-                          ) : (
-                            <FileText size={20} />
-                          )}
-                          {shortName}
+                          <EllipsisVertical size={17} />
+                        </span>
+                      )}
 
-                          {/* أيقونة تظهر عند hover */}
-                          {hovered && !menuOpen && (
-                            <span
-                              style={{
-                                position: "absolute",
-                                top: "0",
-                                right: "0",
-                                color: "#000",
-                              }}
-                              onClick={(e) => {
-                                e.stopPropagation(); // مهم جدًا
-                                setMenuOpenIndex(
-                                  menuOpenIndex === index ? null : index,
-                                );
-                              }}
-                            >
-                              <EllipsisVertical size={17} />
-                            </span>
-                          )}
-
-                          {/* قائمة الخيارات تظهر عند الضغط */}
-                          {menuOpen && (
-                            <div
-                              style={{
-                                width: "170px",
-                                height: "80px",
-                                position: "absolute",
-                                top: "100%",
-                                left: "0",
-                                background: "white",
-
-                                border: "1px solid #ccc",
-                                borderRadius: "16px",
-                                padding: "5px",
-                                zIndex: 100,
-                              }}
-                            >
-                              {/* <div
-                  style={{ padding: "5px 10px", cursor: "pointer" }}
-                  onClick={() => {
-                    console.log("Rename", file.name);
-                    setMenuOpenIndex(null);
-                  }}
-                >
-                  Rename
-                </div> */}
-                              <div
-                                style={{
-                                  background: "#DDE4EE",
-                                  height: "28px",
-                                  cursor: "pointer",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  borderRadius: "16px",
-                                  marginBottom: "5px ",
-                                  padding: "5px 10px",
-                                }}
-                                onClick={() => {
-                                  console.log("Rename", file.name);
-                                  setMenuOpenIndex(null);
-                                }}
-                              >
-                                <Plus
-                                  size={15}
-                                  style={{ marginRight: "5px" }}
-                                />
-                                <span> add to category</span>
-                              </div>
-
-                              <div
-                                style={{
-                                  padding: "5px 10px",
-                                  cursor: "pointer",
-                                  color: "red",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  borderRadius: "16px",
-                                  marginBottom: "5px ",
-                                  padding: "5px 10px",
-                                }}
-                                onClick={async () => {
-                                  const fileId = file._id || file.id;
-
-                                  if (!fileId) {
-                                    console.warn("No fileId found", file);
-                                    return;
-                                  }
-
-                                  try {
-                                    const accessToken =
-                                      localStorage.getItem("accessToken");
-
-                                    const res = await fetch(
-                                      `http://localhost:3000/upload/delete/${fileId}`,
-                                      {
-                                        method: "DELETE",
-                                        headers: {
-                                          Authorization: `bearer ${accessToken}`,
-                                        },
-                                      },
-                                    );
-                                    const data = await res.json(); // 👈 ده المهم
-                                    console.log("Response:", data);
-window.dispatchEvent(new Event("recent-update"));
-                                    if (!res.ok)
-                                      throw new Error("Delete failed");
-
-                                    console.log("Deleted", fileId);
-
-                                    // تحديث UI
-                                    if (file.type === "csv") {
-                                      setCsvFiles((prev) =>
-                                        prev.filter(
-                                          (f) => (f._id || f.id) !== fileId,
-                                        ),
-                                      );
-                                    } else {
-                                      setPdfFiles((prev) =>
-                                        prev.filter(
-                                          (f) => (f._id || f.id) !== fileId,
-                                        ),
-                                      );
-                                    }
-                                    setRecent((prev) =>
-                                      prev.filter(
-                                        (f) => (f._id || f.id) !== fileId,
-                                      ),
-                                    );
-
-                                    setMenuOpenIndex(null);
-                                  } catch (err) {
-                                    console.error(err);
-                                  }
-                                }}
-                              >
-                                <Trash2
-                                  size={15}
-                                  style={{ marginRight: "5px" }}
-                                />
-                                <span> delete</span>
-                              </div>
-                            </div>
-                          )}
+                      {menuOpen && (
+                        <div
+                          style={{
+                            width: "170px",
+                            position: "absolute",
+                            top: "100%",
+                            left: 0,
+                            background: "white",
+                            border: "1px solid #ccc",
+                            borderRadius: "16px",
+                            padding: "5px",
+                            zIndex: 100,
+                          }}
+                        >
+                          <div
+                            style={{
+                              background: "#DDE4EE",
+                              height: "28px",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              borderRadius: "16px",
+                              marginBottom: "5px",
+                              padding: "5px 10px",
+                            }}
+                            onClick={() => setMenuOpenIndex(null)}
+                          >
+                            <Plus size={15} style={{ marginRight: "5px" }} />
+                            <span>add to category</span>
+                          </div>
+                          <div
+                            style={{
+                              padding: "5px 10px",
+                              cursor: "pointer",
+                              color: "red",
+                              display: "flex",
+                              alignItems: "center",
+                              borderRadius: "16px",
+                              marginBottom: "5px",
+                            }}
+                            onClick={() => handleDeleteFile(file)}
+                          >
+                            <Trash2 size={15} style={{ marginRight: "5px" }} />
+                            <span>delete</span>
+                          </div>
                         </div>
-                      );
-                    })}
-
-                <button className="upload-btn" onClick={handleUploadClick}>
-                  <Plus size={16} />
-                  Upload File
-                </button>
-              </div>
-            )}
-            <div
-              className="files-header"
-              onClick={() => setOpenCat1(!openCat1)}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                cursor: "pointer",
-                marginBottom: "10px",
-              }}
-            >
-              <ChevronRight
-                size={18}
-                style={{
-                  transform: openCat1 ? "rotate(90deg)" : "rotate(0deg)",
-                  transition: "0.3s",
-                }}
-              />
-              <span>general category</span>
-            </div>
-            {openCat1 && (
-              <div className="files-content">
-                {generalFiles.length === 0
-                  ? ""
-                  : generalFiles.map((file) => (
-                      <div key={file._id} className="file-item">
-                        <FileText size={16} />
-                        {file.fileName}
-                      </div>
-                    ))}
-
-                <button className="upload-to-btn" onClick={handleUploadClick}>
-                  <Plus size={16} />
-                  Upload File
-                </button>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
 
-            {/* <button className="add-category-btn" onClick={openAddCategoryModal}>
-              <Plus size={16} />
-              add category
-            </button> */}
+            {/* ── Dynamic Categories ── */}
+            {categories.map((cat) => {
+              const isOpen = openSections[cat._id] ?? false;
+              const catFiles = categoryFiles[cat._id] || [];
 
-            {AddingCategoryModal && (
+              return (
+                <div key={cat._id}>
+                  <div
+                    className="files-header"
+                    onClick={() => toggleSection(cat._id)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      cursor: "pointer",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    <ChevronRight
+                      size={18}
+                      style={{
+                        transform: isOpen ? "rotate(90deg)" : "rotate(0deg)",
+                        transition: "0.3s",
+                      }}
+                    />
+                    <span>{cat.categoryName || cat.name}</span>
+                  </div>
+
+                  {isOpen && (
+                    <div className="files-content">
+                      {catFiles.length === 0 && (
+                        <div
+                          style={{
+                            fontSize: "12px",
+                            color: "#999",
+                            marginBottom: "6px",
+                            paddingLeft: "4px",
+                          }}
+                        >
+                          No files yet
+                        </div>
+                      )}
+                      {catFiles.map((file) => (
+                        <div key={file._id} className="file-item">
+                          <FileText size={16} />
+                          {file.fileName || file.name}
+                        </div>
+                      ))}
+                      <button
+                        className="upload-to-btn"
+                        onClick={() => handleCategoryUploadClick(cat._id)}
+                      >
+                        <Plus size={16} />
+                        Upload File
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            {addingCategoryModal && (
               <AddCategoryModal onClose={() => setAddingCategoryModal(false)} />
             )}
           </div>
-
-          {/* {files.length === 0 ? (<>
- 
-  <span className="file-item">
-    <FileText size={16} />
-      File_Name
-  </span></>
-) : (
-  files.map((file, index) => (
-    <span key={index} className="file-item">
-      <FileText size={16} />
-      {file.name}
-    </span>
-  ))
-)}
-  
-  <button className="upload-btn" onClick={handleUploadClick}>
-    <Plus color="#666666" size={16} />
-    Upload File
-  </button> */}
         </div>
       </div>
     </div>
