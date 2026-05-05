@@ -52,7 +52,7 @@ const [thinkingStep, setThinkingStep] = useState("");
         throw new Error("Server error");
       }
       const data = await res.json();
- await new Promise((r) => setTimeout(r, 10000));
+ await new Promise((r) => setTimeout(r, 3000));
       // السيرفر ممكن يرد بأي اسم مفتاح
       const sum = data.summary;
 
@@ -253,20 +253,13 @@ async function sendQuestion() {
           {fileOpen ? <PanelLeft size={20} /> : <PanelRight size={20} />}
         </div>
       </div>
- {loadingSummary ?(
-        <div  
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "50vh", // نص ارتفاع الصفحة
-              fontSize: "18px",
-              fontWeight: "500",
-            }}
-          >
-            <ClipLoader color="#4F204E" size={50} />
-          </div>
-      ):( <div className="chatlayout">
+{loadingSummary ? (
+  <div className="loader-container">
+    <div className="spinner"></div>
+    <p className="loading-text">Generating insights...</p>
+  </div>
+) : (
+  <div className="chatlayout">
         
         {" "}
         <div className="chat-container  ">

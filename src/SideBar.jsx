@@ -585,12 +585,45 @@ export default function Sidebar() {
                           No files yet
                         </div>
                       )}
-                      {catFiles.map((file) => (
-                        <div key={file._id} className="file-item">
-                          <FileText size={16} />
-                          {file.fileName || file.name}
-                        </div>
-                      ))}
+                     {catFiles.map((file, index) => {
+  const isCSV =
+    file.fileName?.endsWith(".csv") ||
+    file.type === "csv" ||
+    file.fileType === "csv";
+
+  const nameToShow =
+    file.fileName || file.name || "Untitled File";
+
+  const shortName =
+    nameToShow.length > 15
+      ? nameToShow.slice(0, 15) + "..."
+      : nameToShow;
+
+  return (
+    <div
+      key={file._id || index}
+      className="file-item"
+      style={{ cursor: "pointer" }}
+      onClick={() => {
+        navigate(isCSV ? "/dashboard" : "/chat", {
+          state: {
+            fileUrl: file.url,
+            fileId: file._id,
+            accessToken,
+          },
+        });
+      }}
+    >
+      {isCSV ? (
+        <ChartColumn size={20} />
+      ) : (
+        <FileText size={20} />
+      )}
+
+      {shortName}
+    </div>
+  );
+})}
                       {/* <button */}
                         {/* className="upload-to-btn" */}
                         {/* onClick={() => handleCategoryUploadClick(cat._id)} */}
