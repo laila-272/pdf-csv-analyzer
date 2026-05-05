@@ -591,13 +591,13 @@ export default function Sidebar() {
                           {file.fileName || file.name}
                         </div>
                       ))}
-                      <button
-                        className="upload-to-btn"
-                        onClick={() => handleCategoryUploadClick(cat._id)}
-                      >
-                        <Plus size={16} />
-                        Upload File
-                      </button>
+                      {/* <button */}
+                        {/* className="upload-to-btn" */}
+                        {/* onClick={() => handleCategoryUploadClick(cat._id)} */}
+                      {/* > */}
+                        {/* <Plus size={16} /> */}
+                        {/* Upload File */}
+                      {/* </button> */}
                     </div>
                   )}
                 </div>
@@ -605,7 +605,8 @@ export default function Sidebar() {
             })}
 
             {addingCategoryModal && (
-              <AddCategoryModal onClose={() => setAddingCategoryModal(false)} />
+              <AddCategoryModal onClose={() => setAddingCategoryModal(false)} 
+              />
             )}
           </div>
         </div>

@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-// import chart_img from "../src/assets/chart.SVG";
-import chart_img from "../src/assets/piechart.SVG";
 
+import line_img from "../src/assets/charts/line.SVG";
+import scatter_img from "../src/assets/charts/scatter.SVG";
+import heat_img from "../src/assets/newphotos/heat.SVG";
+import histo_img from "../src/assets/charts/histo.SVG";
+import  bar_img from "../src/assets/newphotos/bar.SVG";
+import pie_img from "../src/assets/newphotos/pie.SVG";
 import {
   PanelLeft,
   CircleX,
@@ -19,12 +23,27 @@ import {
 export default function CSVColumns() {
   const navigate = useNavigate();
   const { state } = useLocation();
-  const { fileId, accessToken } = state || {};
+  const { fileId, accessToken, fileName } = state || {};
 
   const [charts, setCharts] = useState([]);
   const [selectedCharts, setSelectedCharts] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const chartImages = {
+    line: line_img,
+    scatter: scatter_img,
+    heatmap: heat_img,
+    bar: bar_img,
+    histogram: histo_img,
+    pie: pie_img,
+  };
+   const chartTypeColors = {
+    bar: "#849275",
+    line: "#41B6A3",
+    scatter: "#7441B6",
+    histogram: "#A82F50",
+    pie: "#4A5699",
+    heatmap:"#DBA020",
+  };
   // ---------------- FETCH CHART OPTIONS ----------------
   useEffect(() => {
     if (fileId) {
@@ -78,13 +97,15 @@ export default function CSVColumns() {
       });
 
       const data = await res.json();
-      console.log(data.charts);
+      console.log("visualize response:", data);
+      // console.log(data.charts);
       if (res.ok) {
         navigate("/dashboard", {
           state: {
             charts: data.charts,
           },
         });
+        
       }
     } catch (err) {
       console.error("Visualization Error:", err);
@@ -95,10 +116,17 @@ export default function CSVColumns() {
     <div className="columns">
       <div className="title">
         <PanelLeft size={20} />
-        <span>Data Relationships Found (6)</span>
+        <span>Data Relationships Found ({charts.length})</span>{" "}
       </div>
-      <div className="coldisc"> <span>Select the charts you want to add to your synthesis dashboard</span>
-     <span className="analyze" >"file-name.csv" analyzed successfully (1.2 MB)</span></div>
+      <div className="coldisc">
+        {" "}
+        <span>
+          Select the charts you want to add to your synthesis dashboard
+        </span>
+        <span className="analyze">
+          "{fileName}"analyzed successfully 
+        </span>
+      </div>
 
       {/* LOADING */}
       {loading && <p>Loading charts...</p>}
@@ -107,13 +135,33 @@ export default function CSVColumns() {
       <div className="optionss">
         {!loading &&
           charts.map((chart) => (
-            <div key={chart.id} className="option">
+            <div key={chart.id} style={{
+    border: `2px solid ${
+      chartTypeColors[chart.chartType?.toLowerCase()] || "#ddd"
+    }`,
+  }} className="option">
               <div className="option-content">
                 <div className="chart-desc">
-                  <div className="img"><img src={chart_img} alt="" />
-                 </div>
+                  <div className="img" >
+                    <img
+                    
+                      src={chartImages[chart.chartType?.toLowerCase()]}
+                      alt={chart.chartType}
+                    />
+                   <span
+                  className="chart-type"
+                  style={{
+                    color: chartTypeColors[chart.chartType] || "#333",
+                    fontWeight: "600",
+                    fontSize: "18px",
+                  }}
+                >
+                  {chart.chartType}
+                </span>
+                  </div>
                   <div className="titlle">
                     {chart.title}
+
                     <span className="mapping">
                       mapping:
                       <span className="badgee">{chart.mapping?.x?.column}</span>
@@ -139,18 +187,19 @@ export default function CSVColumns() {
           ))}
       </div>
       {/* BUTTON */}
-     <div className="footer">
-      <span style={{color:"#7F7F7F"}}>AI-powered chart suggestions</span>
-      <div className="chartbtns"><button  className="cancell">cancel</button>
-       <button
-       className="create"
-        onClick={generateCharts}
-        disabled={selectedCharts.length === 0}
-        
-      >
-       Create Dashboard
-      </button></div>
-     </div>
+      <div className="footer">
+        <span style={{ color: "#7F7F7F" }}>AI-powered chart suggestions</span>
+        <div className="chartbtns">
+          <button className="cancell">cancel</button>
+          <button
+            className="create"
+            onClick={generateCharts}
+            disabled={selectedCharts.length === 0}
+          >
+            Create Dashboard
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

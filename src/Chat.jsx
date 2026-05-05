@@ -214,15 +214,7 @@ async function sendQuestion() {
   }
   return (
     <div className="chat">
-      {loadingSummary && (
-  <div className="full-loader">
-    <DotLottieReact
-      src="https://lottie.host/afa7c5f2-bac0-4f2a-8108-dee8a3d7386f/AzpDjgiBm8.lottie"
-      loop
-      autoplay
-    />
-  </div>
-)}
+      
       <input
         type="file"
         hidden
@@ -261,8 +253,21 @@ async function sendQuestion() {
           {fileOpen ? <PanelLeft size={20} /> : <PanelRight size={20} />}
         </div>
       </div>
-
-      <div className="chatlayout">
+ {loadingSummary ?(
+        <div  
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "50vh", // نص ارتفاع الصفحة
+              fontSize: "18px",
+              fontWeight: "500",
+            }}
+          >
+            <ClipLoader color="#4F204E" size={50} />
+          </div>
+      ):( <div className="chatlayout">
+        
         {" "}
         <div className="chat-container  ">
           <div className="messages">
@@ -383,7 +388,7 @@ async function sendQuestion() {
                   src={fileUrl}
                   width="100%"
                   height="100%"
-                  style={{ border: "none", background: "green" }}
+                  style={{ border: "none" }}
                 />
               ) : (
                 <span>No file loaded</span>
@@ -392,7 +397,9 @@ async function sendQuestion() {
             </div>
           </div>
         )}
-      </div>
+      </div>)}
+
+     
     </div>
   );
 }

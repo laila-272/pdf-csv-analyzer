@@ -47,7 +47,7 @@ export default function CSVScanBox({ fetchRecent, fetchGeneralFiles }) {
         headers: { Authorization: `bearer ${accessToken}` },
       });
       const data = await res.json();
-
+     console.log("Upload response:", data);
       // ── optimistic: appear in sidebar immediately ──────────────────────
       const uploaded = data.CSV || data.file;
       if (uploaded) {
@@ -129,7 +129,7 @@ export default function CSVScanBox({ fetchRecent, fetchGeneralFiles }) {
     if (!csvFiles?.length) return;
     const currentFile = csvFiles[csvFiles.length - 1];
     const fileUrl = URL.createObjectURL(currentFile.originalFile);
-    navigate("/CSVColumns", { state: { fileUrl, fileId: currentFile?._id, accessToken } });
+    navigate("/CSVColumns", { state: { fileUrl, fileId: currentFile?._id, accessToken, fileName: currentFile?.name } });
   }
 
   // ── Render ───────────────────────────────────────────────────────────────

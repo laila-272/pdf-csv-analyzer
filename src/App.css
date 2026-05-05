@@ -11,7 +11,7 @@
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-  background: #8B8B8B;
+  background: #3d2828;
   border-radius: 16px;
 
   margin-top: 0;
@@ -22,6 +22,20 @@
   text-transform: capitalize
 }
 
+.img{
+margin-right: 40px;
+  /* background-color: #ddb6b2; */
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+.img img {
+ /* background-color: #e74c3c; */
+  width: 65px;
+  height: 50px;
+  /* border-radius: 50%; */
+}
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Jomolhari&display=swap');
 
@@ -121,8 +135,19 @@
   background-color: #D5D9D0 !important;
 }
 
-
 .homecom .title {
+  border-bottom: 1px solid #D9D9D9;
+  font-weight: 600;
+  font-size: 17px;
+  height: 44px;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding-left: 16px;
+  /* background-color: #113567; */
+}
+.charts .title {
   border-bottom: 1px solid #D9D9D9;
   font-weight: 600;
   font-size: 17px;
@@ -217,6 +242,7 @@
   font-weight: 400;
   font-style: medium;
   padding: 7px 16px;
+  /* background-color: aqua; */
   /* border: #D5D9D0 1px solid; */
 }
 
@@ -549,6 +575,28 @@ min-width: 740px;  background: #FFE0E0;
 
 }
 
+.chartsarea{
+  /* background-color: beige; */
+  height: 500px;
+  overflow-y: auto;
+width: 1222px;
+margin: auto;
+  scrollbar-width: none; /* Firefox */
+  margin-top: 20px;
+
+}
+.lll{
+  background-color: transparent;
+  /* border: #075F51 solid 1px; */
+}
+.chartdesc{
+  width: 1222px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding-top: 20px;
+}
 .chat-content {
   /* background: tomato; */
   width: 977px;
@@ -556,13 +604,39 @@ min-width: 740px;  background: #FFE0E0;
   overflow: hidden;
 
 }
-
+.chart-btns{
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 16px;
+  gap: 10px;
+}
+.chart-btns .download{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  background-color:#EAEFF8;
+  border: 1px solid #113567;
+  border-radius: 3px;
+  font-weight: 600;
+}
+.chart-btns .select{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  background-color:transparent;
+  border: 1px solid #000;
+  border-radius: 3px;
+  font-weight: 600;
+}
 
 
 .chatlayout {
   display: flex;
   flex: 1;
   height: 100%;
+  /* background-color: aqua; */
 }
 
 .thefile {
@@ -578,7 +652,25 @@ min-width: 740px;  background: #FFE0E0;
   /* border-radius: 10px; */
 
 }
+.spin {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #FFF;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    }
 
+    @keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+    } 
 .buttons {
   display: flex;
   gap: 10px;
@@ -1568,7 +1660,7 @@ textarea {
 
 
 
-.loader {
+.loaders {
   width: 40px;
   height: 40px;
   border: 4px solid #ddd;
@@ -1650,14 +1742,15 @@ height: 680px;
   width: 1222px;
   height: 113px;
   border-radius: 24px;
-margin: auto;
+margin: auto; 
+/* background-color: aquamarine; */
 border:#1135673D 1px solid;
 }
 .chart-desc{
   display: flex;
   /* background-color: #666666; */
   align-items: center;
-  margin-left: 25px;
+  margin-left: 32px;
    height: 97px;
    margin-top: 8px;
    font-size: 18px;
@@ -1704,7 +1797,8 @@ display: flex;
   font-size: 20px;
   font-weight: 500;
   border: 1px solid #1135674D;
-  width: 482px;
+  padding: 10px 10px;
+  /* width: 482px; */
   height: 40px;
  background-color: #EAEFF8;
  text-align: center;
@@ -1768,6 +1862,7 @@ padding: 5px 5px;
 display: flex;
 /* background-color: #075F51; */
 gap: 16px;
+/* margin-left: 10px; */
 }
 .inputt {
   display: flex;

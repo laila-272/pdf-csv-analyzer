@@ -80,6 +80,7 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    zIndex: 1000,
   },
   modal: {
     background: "#fff",
@@ -87,6 +88,7 @@ const styles = {
     borderRadius: "16px",
     width: "484px",
     height: "320px",
+    // zIndex: 1000,
     // background:"tomato"
   },
   header: {
