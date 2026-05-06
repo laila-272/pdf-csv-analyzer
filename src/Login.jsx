@@ -41,6 +41,8 @@ export default function Login() {
         console.log(response.data);
         window.alert("Login successful!");
         localStorage.setItem("accessToken", response.data.accessToken);
+        window.dispatchEvent(new Event("auth-change"));
+
           navigate("/home");
         // ممكن تخزن التوكن أو تعمل redirect
         // localStorage.setItem("token", response.data.token);

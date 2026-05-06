@@ -18,7 +18,7 @@ export default function Signup() {
 
   let user = {
     email: "",
-    // userName: "",
+    userName: "",
     password: "",
     confirmPassword: "",
    
@@ -30,13 +30,13 @@ export default function Signup() {
     try {
      const response= await axios.post("http://localhost:3000/users/signUp", {
         email: values.email,
-        // userName: values.userName,
+        userName: values.userName,
         password: values.password,
         cPassword: values.confirmPassword,
       });
 console.log({
   email: values.email,
-  // userName: values.userName,
+  userName: values.userName,
   password: values.password,
   cPassword: values.confirmPassword,
 });
@@ -55,10 +55,10 @@ console.log(values);
     initialValues: user,
     onSubmit: signupfun,
     validationSchema: Yup.object().shape({
-      // userName: Yup.string().trim()
-      //   .min(3, "Name must be at least 3 characters").max(30, "Name must be at most 30 characters")
+      userName: Yup.string().trim()
+        .min(3, "Name must be at least 3 characters").max(30, "Name must be at most 30 characters")
        
-      //   .required("Name is required"),
+        .required("Name is required"),
       email: Yup.string()
         .email("Invalid email address")
         .required("Email is required"),
@@ -113,7 +113,7 @@ console.log(values);
               {signup.errors.email}
             </div>
           )}
-          {/* <input
+          <input
             name="userName"
             value={signup.values.userName}
             onChange={signup.handleChange}
@@ -126,7 +126,7 @@ console.log(values);
             <div style={{ color: "red", fontSize: "12px" }}>
               {signup.errors.userName}
             </div>
-          )} */}
+          )}
           <input
             name="password"
             value={signup.values.password}

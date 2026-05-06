@@ -3,7 +3,7 @@ import { createContext, useState, useCallback } from "react";
 
 export const FileContext = createContext();
 
-export const GENERAL_CATEGORY_ID = "69e65b0b17c6dbad8a7757b1";
+export const GENERAL_CATEGORY_ID = "69fb6d2d46869a9d3b005e5d";
 
 export function FileProvider({ children }) {
   const [pdfFiles, setPdfFiles]           = useState([]);
@@ -42,6 +42,7 @@ export function FileProvider({ children }) {
         headers: { Authorization: `bearer ${accessToken}` },
       });
       const data = await res.json();
+      console.log("Fetched categories:", data.categories);
       setCategories(data.categories || []);
     } catch (err) { console.error(err); }
   }, []);

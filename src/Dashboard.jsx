@@ -1,17 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { PanelLeft, Download,Check } from "lucide-react";
+import { PanelLeft, Download, Check } from "lucide-react";
 import Plot from "react-plotly.js";
 
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import Plotly from "plotly.js-dist";
-
+import axios from "axios";
 export default function Dashboard() {
   const { state } = useLocation();
-  const charts = state?.charts || [];
 
+  const chartsFromState = state?.charts || [];
+  const fileId = state?.fileId;
+  const accessToken = state?.accessToken;
+
+  const [charts, setCharts] = useState(chartsFromState);
   const [selectedCharts, setSelectedCharts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const chartTypeColors = {
     bar: "#849275",
@@ -21,7 +26,38 @@ export default function Dashboard() {
     pie: "#4A5699",
     heatmap: "#DBA020",
   };
+  useEffect(() => {
+    if (!fileId) return;
 
+    const fetchHistory = async () => {
+      try {
+        setLoading(true);
+
+        const res = await axios.get(
+          `http://localhost:3000/ai/figures/${fileId}`,
+          {
+            headers: {
+              Authorization: `bearer ${accessToken}`,
+            },
+          },
+        );
+        console.log("history response:", res.data);
+        const historyCharts = res.data.charts || [];
+
+        setCharts((prev) => {
+          const merged = [...historyCharts, ...prev];
+
+          return Array.from(new Map(merged.map((c) => [c.id, c])).values());
+        });
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, [fileId]);
   // ✅ Select All / Unselect All
   const handleSelectAll = () => {
     if (selectedCharts.length === charts.length) {
@@ -45,7 +81,7 @@ export default function Dashboard() {
     const zip = new JSZip();
 
     const selected = charts.filter((chart) =>
-      selectedCharts.includes(chart.id)
+      selectedCharts.includes(chart.id),
     );
 
     for (let i = 0; i < selected.length; i++) {
@@ -127,11 +163,7 @@ export default function Dashboard() {
                 className="linechart"
                 onClick={() => toggleChart(chart.id)}
                 style={{
-                  border: `2px solid ${
-                    isSelected
-                      ?  "#113567"
-                      : "#ddd"
-                  }`,
+                  border: `2px solid ${isSelected ? "#113567" : "#ddd"}`,
                   padding: "10px",
                   borderRadius: "12px",
                   width: "100%",
@@ -142,7 +174,6 @@ export default function Dashboard() {
                   flexDirection: "column",
                   cursor: "pointer",
                   transition: "0.3s",
-
                 }}
               >
                 {/* Top actions */}
@@ -156,20 +187,20 @@ export default function Dashboard() {
                     transition: "0.3s",
                   }}
                 >
-                 <div
-  className="custom-check-wrapper"
-  onClick={(e) => e.stopPropagation()}
->
-  <input
-    id={`chart-${chart.id}`}
-    type="checkbox"
-    checked={isSelected}
-    onChange={() => toggleChart(chart.id)}
-  />
-  <Check className="check-icon" size={20} />
-</div>
+                  <div
+                    className="custom-check-wrapper"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <input
+                      id={`chart-${chart.id}`}
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => toggleChart(chart.id)}
+                    />
+                    <Check className="check-icon" size={20} />
+                  </div>
 
-{/* <span
+                  {/* <span
   onClick={(e) => {
     e.stopPropagation();
     setSelectedCharts(
@@ -207,13 +238,9 @@ export default function Dashboard() {
                     className="mapping"
                   >
                     mapping:
-                    <span className="badgee">
-                      {chart.mapping?.x?.column}
-                    </span>
+                    <span className="badgee">{chart.mapping?.x?.column}</span>
                     <span>&</span>
-                    <span className="badgee">
-                      {chart.mapping?.y?.column}
-                    </span>
+                    <span className="badgee">{chart.mapping?.y?.column}</span>
                   </span>
                 </div>
 
@@ -241,4 +268,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
