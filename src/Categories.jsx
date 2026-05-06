@@ -5,6 +5,7 @@ import "./Categories.css";
 import { useNavigate } from "react-router-dom";
 import AddCategoryModal from "./AddCategoryModal.jsx";
 import { FileContext } from "./FileContext";
+import toast from "react-hot-toast";
 
 export default function Categories() {
   const navigate    = useNavigate();
@@ -52,8 +53,7 @@ export default function Categories() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.message);
-        // rollback: re-fetch from server
+toast.error(data.message || "Something went wrong");        // rollback: re-fetch from server
         fetchCategories(accessToken);
       }
       // tell Sidebar to sync just in case

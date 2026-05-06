@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Toaster } from "react-hot-toast";
+
 import { FileProvider } from "./FileContext.jsx";
 import "./Categories.css"
 import "./App.css";
@@ -98,6 +100,7 @@ function App() {
 
       <DragTextProvider>
         <FileProvider>
+            <Toaster position="top-center" />
           <RouterProvider router={router} />
         </FileProvider>
       </DragTextProvider>

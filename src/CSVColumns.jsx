@@ -113,7 +113,7 @@ export default function CSVColumns() {
   }
 
   return (
-    <div className="columns">
+    <div style={{}} className="columns">
       <div className="title">
         <PanelLeft size={20} />
         <span>Data Relationships Found ({charts.length})</span>{" "}
@@ -187,7 +187,7 @@ export default function CSVColumns() {
           ))}
       </div>
       {/* BUTTON */}
-      <div className="footer">
+      <div className="footerparent"><div className="footer">
         <span style={{ color: "#7F7F7F" }}>AI-powered chart suggestions</span>
         <div className="chartbtns">
           <button className="cancell">cancel</button>
@@ -199,7 +199,7 @@ export default function CSVColumns() {
             Create Dashboard
           </button>
         </div>
-      </div>
+      </div></div>
     </div>
   );
 }

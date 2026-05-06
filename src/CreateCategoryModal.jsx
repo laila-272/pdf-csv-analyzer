@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import "./Categories.css";
 import { FileContext } from "./FileContext";
+import toast from "react-hot-toast";
 
 export default function CreateCategoryModal({
   onClose,
@@ -83,10 +84,9 @@ export default function CreateCategoryModal({
         onClose();
       } else {
         const errorData = await res.json();
-        alert(`Error: ${errorData.message || "Something went wrong"}`);
-      }
+toast.error(`Error: ${errorData.message || "Something went wrong"}`);      }
     } catch {
-      alert("Network error, please try again.");
+      toast.error("Network error, please try again.");
     } finally {
       setIsLoading(false);
     }

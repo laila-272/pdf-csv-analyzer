@@ -1,5 +1,7 @@
 import{ CirclePlus} from "lucide-react";
 import { useState } from "react";
+import toast from "react-hot-toast";
+
 export default function AddCategoryModal({ onClose, onSave }) {
    const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
@@ -22,8 +24,7 @@ const accessToken = localStorage.getItem("accessToken");
     const data = await res.json();
 
     if (!res.ok) {
-      alert(data.message); // زي: name already exists
-      return;
+toast.error(data.message || "Something went wrong");      return;
     }
 
     console.log("Category added:", data);

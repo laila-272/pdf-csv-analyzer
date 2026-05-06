@@ -6,7 +6,7 @@ import e1 from "./assets/e1.png";
 import { Formik, useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-
+import toast from "react-hot-toast";
 import AuthHeader from "./AuthHeader";
 import { useNavigate } from "react-router-dom";
 import Authcard from "./AuthCard";
@@ -17,8 +17,8 @@ export default function Signup() {
   const navigate = useNavigate();
 
   let user = {
-    email: "",
     userName: "",
+    email: "",
     password: "",
     confirmPassword: "",
    
@@ -29,36 +29,41 @@ export default function Signup() {
     setLoading(true);
     try {
      const response= await axios.post("http://localhost:3000/users/signUp", {
+       userName: values.userName,
         email: values.email,
-        userName: values.userName,
         password: values.password,
         cPassword: values.confirmPassword,
       });
 console.log({
-  email: values.email,
   userName: values.userName,
+  email: values.email,
   password: values.password,
   cPassword: values.confirmPassword,
 });
+toast.success("Account created successfully! 🎉");
+
 console.log(response.data);
 console.log(values);
       // نحفظ الإيميل للـ OTP
       localStorage.setItem("email", values.email);
         localStorage.setItem("accessToken", response.data.accessToken);
-      navigate("/code");
-    } catch (err) {
+setTimeout(() => {
+  navigate("/code");
+}, 1500);    } catch (err) {
       setLoading(false);
-      alert(err.response?.data?.message || "Signup failed");
+      toast.error(err.response?.data?.message || "Signup failed");
     }
   }
   const signup = useFormik({
     initialValues: user,
     onSubmit: signupfun,
     validationSchema: Yup.object().shape({
-      userName: Yup.string().trim()
-        .min(3, "Name must be at least 3 characters").max(30, "Name must be at most 30 characters")
-       
-        .required("Name is required"),
+    userName: Yup.string()
+  .trim()
+  .min(3, "Name must be at least 3 characters")
+  .max(30, "Name must be at most 30 characters")
+  .matches(/^[\u0600-\u06FFa-zA-Z\s]+$/, "Name can only contain letters")
+  .required("Name is required"),
       email: Yup.string()
         .email("Invalid email address")
         .required("Email is required"),
@@ -99,6 +104,20 @@ console.log(values);
             gap: "8px",
           }}
         >
+           <input
+            name="userName"
+            value={signup.values.userName}
+            onChange={signup.handleChange}
+            onBlur={signup.handleBlur}
+            className="auth-input"
+            type="text"
+            placeholder="user name"
+          />
+          {signup.touched.userName && signup.errors.userName && (
+            <div style={{ color: "red", fontSize: "12px" }}>
+              {signup.errors.userName}
+            </div>
+          )}
           <input
             name="email"
             value={signup.values.email}
@@ -113,20 +132,7 @@ console.log(values);
               {signup.errors.email}
             </div>
           )}
-          <input
-            name="userName"
-            value={signup.values.userName}
-            onChange={signup.handleChange}
-            onBlur={signup.handleBlur}
-            className="auth-input"
-            type="text"
-            placeholder="user name"
-          />
-          {signup.touched.userName && signup.errors.userName && (
-            <div style={{ color: "red", fontSize: "12px" }}>
-              {signup.errors.userName}
-            </div>
-          )}
+         
           <input
             name="password"
             value={signup.values.password}

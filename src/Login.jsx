@@ -8,8 +8,7 @@ import AuthHeader from "./AuthHeader.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AuthForm from "./AuthForm";
-
-export default function Login() {
+import toast from "react-hot-toast";export default function Login() {
     const [loading, setLoading] = React.useState(false);
   const navigate = useNavigate();
   let user = {
@@ -39,20 +38,21 @@ export default function Login() {
         );
         // لو الدخول ناجح
         console.log(response.data);
-        window.alert("Login successful!");
-        localStorage.setItem("accessToken", response.data.accessToken);
+toast.success("Login successful!");        localStorage.setItem("accessToken", response.data.accessToken);
         window.dispatchEvent(new Event("auth-change"));
 
-          navigate("/home");
+         setTimeout(() => {
+  navigate("/home");
+}, 1000);
         // ممكن تخزن التوكن أو تعمل redirect
         // localStorage.setItem("token", response.data.token);
         // navigate("/dashboard");
       } catch (error) {
         console.error(error);
-        window.alert(
-          error.response?.data?.message ||
-            "Login failed. Check your credentials.",
-        );
+       toast.error(
+  error.response?.data?.message ||
+    "Login failed. Check your credentials."
+);
       } finally {
         setSubmitting(false);
         setLoading(false);

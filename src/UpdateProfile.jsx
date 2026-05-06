@@ -3,6 +3,7 @@ import img from "./assets/Group9.jpg";
 import Authlayout from "./AuthLayout.jsx";
 import Authcard from "./AuthCard.jsx";
 import AuthHeader from "./AuthHeader.jsx";
+import toast from "react-hot-toast";
 
 import { Formik, useFormik } from "formik";
 import * as Yup from "yup";
@@ -28,7 +29,7 @@ export default function Updateprofile() {
   try {
     const token = localStorage.getItem("accessToken"); //
     if (!accessToken) {
-      alert("You are not logged in");
+      toast.error("You are not logged in");
       return;
     } // توكن من signup/confirmEmail
    const res = await axios.post("http://localhost:5000/users/updateProfile", formData, {
@@ -40,7 +41,7 @@ export default function Updateprofile() {
  console.log(res.data);
     navigate("/home"); // بعد ما ينجح
   } catch (err) {
-    alert(err.response?.data?.message || "Update failed");
+    toast.error(err.response?.data?.message || "Update failed");
   }
 }
 

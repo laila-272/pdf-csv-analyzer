@@ -22,20 +22,22 @@
   text-transform: capitalize
 }
 
-.img{
-margin-right: 40px;
+.img {
+  margin-right: 40px;
   /* background-color: #ddb6b2; */
   display: flex;
   gap: 8px;
   align-items: center;
   justify-content: center;
 }
+
 .img img {
- /* background-color: #e74c3c; */
+  /* background-color: #e74c3c; */
   width: 65px;
   height: 50px;
   /* border-radius: 50%; */
 }
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Jomolhari&display=swap');
 
@@ -147,6 +149,7 @@ margin-right: 40px;
   padding-left: 16px;
   /* background-color: #113567; */
 }
+
 .charts .title {
   border-bottom: 1px solid #D9D9D9;
   font-weight: 600;
@@ -159,7 +162,8 @@ margin-right: 40px;
   padding-left: 16px;
   /* background-color: #113567; */
 }
-.columns  .title {
+
+.columns .title {
   border-bottom: 1px solid #D9D9D9;
   font-weight: 600;
   font-size: 17px;
@@ -171,6 +175,7 @@ margin-right: 40px;
   padding-left: 16px;
   /* background-color: #113567; */
 }
+
 /* .titlechat  {
   background-color: #afb7c2;
   display: flex;
@@ -372,10 +377,12 @@ h4 {
 }
 
 .drag-safe {
-  box-sizing: border-box; /* بيضمن إن الـ width يفضل 740 مهما كان الـ padding */
+  box-sizing: border-box;
+  /* بيضمن إن الـ width يفضل 740 مهما كان الـ padding */
   height: 155px;
   margin-top: 100px;
-min-width: 740px;  background: #ECF9EE;
+  min-width: 740px;
+  background: #ECF9EE;
   border-radius: 24px;
   position: relative;
   padding-top: 30px;
@@ -390,7 +397,8 @@ min-width: 740px;  background: #ECF9EE;
 .drag-unsafe {
   margin-top: 100px;
   height: 155px;
-min-width: 740px;  background: #FFE0E0;
+  min-width: 740px;
+  background: #FFE0E0;
   border-radius: 24px;
   position: relative;
   padding-top: 30px;
@@ -401,15 +409,17 @@ min-width: 740px;  background: #FFE0E0;
   position: absolute;
   top: 370px;
   margin-top: 40px;
-/* background-color: #075F51; */
+  /* background-color: #075F51; */
 }
+
 .comprehensivee {
   position: absolute;
-  top:145px;
+  top: 145px;
   right: 480px;
   margin-top: 40px;
-/* background-color: #075F51; */
+  /* background-color: #075F51; */
 }
+
 .drag-unsafe.no-hover:hover {
   background: #FFE0E0 !important;
   /* الأحمر */
@@ -424,7 +434,7 @@ min-width: 740px;  background: #FFE0E0;
 
 .summarize-btn {
   /* width: 224px; */
-  padding:0 14px;
+  padding: 0 14px;
   height: 46px;
   border-radius: 20px;
   border: 2px solid #113567;
@@ -575,16 +585,18 @@ min-width: 740px;  background: #FFE0E0;
 
 }
 
-.chartsarea{
+.chartsarea {
   /* background-color: beige; */
   height: 500px;
   overflow-y: auto;
-width: 1222px;
-margin: auto;
-  scrollbar-width: none; /* Firefox */
+  width: 1222px;
+  margin: auto;
+  scrollbar-width: none;
+  /* Firefox */
   margin-top: 20px;
 
 }
+
 .loader-container {
   margin-top: 150px;
   /* background-color: #FA2D32; */
@@ -618,15 +630,25 @@ margin: auto;
 }
 
 @keyframes fade {
-  0% { opacity: 0.3; }
-  50% { opacity: 1; }
-  100% { opacity: 0.3; }
+  0% {
+    opacity: 0.3;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.3;
+  }
 }
-.lll{
+
+.lll {
   background-color: transparent;
   /* border: #075F51 solid 1px; */
 }
-.chartdesc{
+
+.chartdesc {
   width: 1222px;
   margin: auto;
   display: flex;
@@ -634,6 +656,7 @@ margin: auto;
   gap: 30px;
   padding-top: 20px;
 }
+
 .chat-content {
   /* background: tomato; */
   width: 977px;
@@ -641,28 +664,31 @@ margin: auto;
   overflow: hidden;
 
 }
-.chart-btns{
+
+.chart-btns {
   display: flex;
   justify-content: flex-end;
   padding: 0 16px;
   gap: 10px;
 }
-.chart-btns .download{
+
+.chart-btns .download {
   display: flex;
   align-items: center;
   gap: 8px;
   height: 40px;
-  background-color:#EAEFF8;
+  background-color: #EAEFF8;
   border: 1px solid #113567;
   border-radius: 3px;
   font-weight: 600;
 }
-.chart-btns .select{
+
+.chart-btns .select {
   display: flex;
   align-items: center;
   gap: 8px;
   height: 40px;
-  background-color:transparent;
+  background-color: transparent;
   border: 1px solid #000;
   border-radius: 3px;
   font-weight: 600;
@@ -689,25 +715,28 @@ margin: auto;
   /* border-radius: 10px; */
 
 }
-.spin {
-    width: 48px;
-    height: 48px;
-    border: 5px solid #FFF;
-    border-bottom-color: transparent;
-    border-radius: 50%;
-    display: inline-block;
-    box-sizing: border-box;
-    animation: rotation 1s linear infinite;
-    }
 
-    @keyframes rotation {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-    } 
+.spin {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #FFF;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .buttons {
   display: flex;
   gap: 10px;
@@ -1492,7 +1521,17 @@ textarea {
   margin-top: 0;
   /* مهم */
 }
+.columns::-webkit-scrollbar {
+  width: 4px;
+}
 
+.columns::-webkit-scrollbar-thumb {
+  background: #8B8B8B;
+  border-radius: 16px;
+
+  margin-top: 0;
+  /* مهم */
+}
 .showfile {
   height: 100%;
 }
@@ -1761,65 +1800,91 @@ textarea {
     opacity: 1;
   }
 }
-.columns .optionss{
+
+.columns .optionss {
   margin-top: 10px;
-display: flex;
-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  /* overflow-x: hidden; */
 
-gap: 16px;
-/* background-color: #075F51; */
+  gap: 16px;
+  /* background-color: #075F51; */
 
 
 }
-.columns{
+
+.columns {
   overflow-y: auto;
-height: 680px;
+  height: 690px;
+  scroll-behavior: smooth;
+  /* background-color: bisque; */
 }
-.columns .option{
+
+.columns .option {
   width: 1222px;
   height: 113px;
   border-radius: 24px;
-margin: auto; 
-/* background-color: aquamarine; */
-border:#1135673D 1px solid;
+  margin: auto;
+  /* background-color: aquamarine; */
+  border: #1135673D 1px solid;
 }
-.chart-desc{
+
+.chart-desc {
   display: flex;
   /* background-color: #666666; */
   align-items: center;
   margin-left: 32px;
-   height: 97px;
-   margin-top: 8px;
-   font-size: 18px;
+  height: 97px;
+  margin-top: 8px;
+  font-size: 18px;
   font-weight: 600;
 
 }
+
 .chart-desc .img {
   display: flex;
   flex-direction: column;
-  align-items: center;      /* بتجيبهم في النص بالعرض */
-  justify-content: center; /* بتجيبهم في النص بالطول */
+  align-items: center;
+  /* بتجيبهم في النص بالعرض */
+  justify-content: center;
+  /* بتجيبهم في النص بالطول */
   width: 100px;
+
+
+}
+
+
+.mapping {
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footerparent {
+  background-color: rgb(255, 255, 255);
+  padding: 16px 0 8px 0;
+   position: sticky;
+  bottom: 0;
+   z-index: 1000;
+     border-bottom-left-radius: 9px;
+
+}
+
+.columns .footer {
  
-             
-}
-
-
-.mapping{
-   font-weight: 400;
-   display: flex;
-   align-items: center;
-   gap: 8px;
-}
-.columns .footer{
-  /* background-color: #075F51; */
-display: flex;
+ 
+  /* background-color: burlywood; */
+  display: flex;
   justify-content: space-between;
+  align-items: center;
   width: 1222px;
   margin: auto;
-  margin-top: 16px;
+  /* margin-top: 16px; */
+
 }
-.coldisc{
+
+.coldisc {
   display: flex;
   justify-content: space-between;
   flex-direction: column;
@@ -1830,77 +1895,87 @@ display: flex;
   font-size: 24px;
   /* justify-content: space-between; */
 }
-.coldisc .analyze{
+
+.coldisc .analyze {
   font-size: 20px;
   font-weight: 500;
   border: 1px solid #1135674D;
   padding: 10px 10px;
   /* width: 482px; */
   height: 40px;
- background-color: #EAEFF8;
- text-align: center;
- margin-left: auto;
- padding-top: 4px;
+  background-color: #EAEFF8;
+  text-align: center;
+  margin-left: auto;
+  padding-top: 4px;
 }
-.chartbtns{
+
+.chartbtns {
   display: flex;
   gap: 40px;
 }
-.chartbtns .create{
+
+.chartbtns .create {
   width: 196px;
   height: 50px;
-border: 1px solid #D9D9D9;
-background-color: transparent;
-font-size: 18px;
-font-weight: 600;
-color: #113567;
-border-radius: 4px;
+  border: 2px solid #113567;
+  background-color: #EAEFF8;
+  font-size: 18px;
+  font-weight: 600;
+  color: #113567;
+  border-radius: 4px;
 }
-.chartbtns .cancell{
+
+.chartbtns .cancell {
   width: 88px;
   height: 50px;
-border: 1px solid #D9D9D9;
-background-color: transparent;
-font-size: 20px;
-font-weight: 600;
-color: #113567;
-border-radius: 4px;
+  border: 2px solid #D9D9D9;
+  background-color: transparent;
+  font-size: 20px;
+  font-weight: 600;
+  color: #113567;
+  border-radius: 4px;
 }
+
 .chartbtns .create:hover,
-.chartbtns .cancell:hover{
+.chartbtns .cancell:hover {
   background-color: #EAEFF8;
-  border: 1px solid #113567;
+  border: 2px solid #113567;
 
 }
-.chart-desc .titlle{
+
+.chart-desc .titlle {
   display: flex;
   flex-direction: column;
-   
+
 }
-.option-content{
+
+.option-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .chart-desc span {
   color: #333;
 
 }
-.badgee{
-    font-size: 14px;
-      background-color: #EAEFF8;
-      font-size: 18px;
-      font-weight: 600;
-border-radius: 16px;
-padding: 5px 5px;
+
+.badgee {
+  font-size: 14px;
+  background-color: #EAEFF8;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 16px;
+  padding: 5px 5px;
 }
 
-.titlle{
-display: flex;
-/* background-color: #075F51; */
-gap: 16px;
-/* margin-left: 10px; */
+.titlle {
+  display: flex;
+  /* background-color: #075F51; */
+  gap: 16px;
+  /* margin-left: 10px; */
 }
+
 .inputt {
   display: flex;
   align-items: center;
@@ -1910,6 +1985,7 @@ gap: 16px;
   font-weight: 400;
   color: #697F9F;
 }
+
 /* .inputt input[type="checkbox"] {
    
 
@@ -1937,38 +2013,46 @@ gap: 16px;
   cursor: pointer;
   height: 100%;
   width: 100%;
-  z-index: 2; /* فوق الأيقونة عشان الكليك */
+  z-index: 2;
+  /* فوق الأيقونة عشان الكليك */
 
 }
+
 .full-loader {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: white; /* أو rgba لو عايزة شفاف */
+  background: white;
+  /* أو rgba لو عايزة شفاف */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
 }
+
 /* الستايل الافتراضي للأيقونة (وهي مش مختارة) */
 .check-icon {
-  color: transparent; /* خليها شفافة */
-  border: 3.5px solid #425D86; /* ارسمي مربع مكانها */
+  color: transparent;
+  /* خليها شفافة */
+  border: 3.5px solid #425D86;
+  /* ارسمي مربع مكانها */
   border-radius: 6px;
   padding: 2px;
   transition: all 0.2s ease-in-out;
   z-index: 1;
-    width: 30px;
+  width: 30px;
   height: 30px;
 }
 
 /* لما الـ input يبقا checked، نغير شكل الأيقونة */
-.custom-check-wrapper input:checked + .check-icon {
-  color: white; /* لون علامة الصح */
-  background-color:#425D86; /* لون المربع (أسود زي الزرار اللي عندك) */
-  border-color:#425D86;
+.custom-check-wrapper input:checked+.check-icon {
+  color: white;
+  /* لون علامة الصح */
+  background-color: #425D86;
+  /* لون المربع (أسود زي الزرار اللي عندك) */
+  border-color: #425D86;
   width: 30px;
   height: 30px;
 }
@@ -1977,4 +2061,3 @@ gap: 16px;
 /* .custom-check-wrapper:hover .check-icon {
   border-color: #000;
 } */
- 
