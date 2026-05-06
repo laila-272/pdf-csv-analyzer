@@ -83,7 +83,7 @@ export default function Home() {
   // ── Upload ────────────────────────────────────────────────────────────────
 
   async function uploadFile(file) {
-    updateDragText("pdf", "Uploading file...");
+    updateDragText( "Uploading file...");
     const formData = new FormData();
     formData.append("file", file);
 

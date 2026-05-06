@@ -582,7 +582,7 @@ export default function Sidebar() {
                             paddingLeft: "4px",
                           }}
                         >
-                          No files yet
+                          
                         </div>
                       )}
                      {catFiles.map((file, index) => {
