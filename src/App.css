@@ -2061,3 +2061,81 @@ textarea {
 /* .custom-check-wrapper:hover .check-icon {
   border-color: #000;
 } */
+ .skeleton-option {
+  width: 1222px;
+  height: 113px;
+  border-radius: 24px;
+  margin: auto;
+  border: 1px solid #1135673D;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  background: #fff;
+  margin-bottom: 16px;
+}
+
+/* shimmer base */
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    #eeeeee 25%,
+    #f5f5f5 50%,
+    #eeeeee 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* LEFT SIDE (image + text) */
+.skeleton-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.skeleton-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+}
+
+.skeleton-texts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeleton-title {
+  width: 220px;
+  height: 14px;
+}
+
+.skeleton-mapping {
+  width: 180px;
+  height: 12px;
+}
+
+/* RIGHT SIDE (add to dashboard) */
+.skeleton-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.skeleton-label {
+  width: 120px;
+  height: 12px;
+}
+
+.skeleton-checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+}

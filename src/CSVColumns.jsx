@@ -129,7 +129,31 @@ export default function CSVColumns() {
       </div>
 
       {/* LOADING */}
-      {loading && <p>Loading charts...</p>}
+    {loading && (
+  <>
+    {[...Array(5)].map((_, i) => (
+      <div key={i} className="skeleton-option">
+
+        {/* LEFT */}
+        <div className="skeleton-left">
+          <div className="skeleton-img skeleton-shimmer" />
+
+          <div className="skeleton-texts">
+            <div className="skeleton-title skeleton-shimmer" />
+            <div className="skeleton-mapping skeleton-shimmer" />
+          </div>
+        </div>
+
+        {/* RIGHT */}
+        <div className="skeleton-right">
+          <div className="skeleton-label skeleton-shimmer" />
+          <div className="skeleton-checkbox skeleton-shimmer" />
+        </div>
+
+      </div>
+    ))}
+  </>
+)}
 
       {/* CHART LIST */}
       <div className="optionss">
