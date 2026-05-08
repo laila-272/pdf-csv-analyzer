@@ -1,41 +1,57 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { EllipsisVertical } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+
 export default function RecentCategories() {
-  const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
 
   function getBorderColor(index) {
     const colors = ["#FFE3E4", "#E3D2C0", "#BFD0FD", "#BCCABD"];
     return colors[index % colors.length];
   }
+
   async function fetchCategories() {
-    try {
-      const res = await fetch("http://localhost:3000/upload/categories", {
-        headers: {
-          Authorization: `bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
+    const res = await fetch("http://localhost:3000/upload/categories", {
+      headers: {
+        Authorization: `bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
 
-      const data = await res.json();
-
-      // ناخد آخر 4 بس
-      const lastFour = (data.categories || data).slice(-4).reverse();
-
-      setCategories(lastFour);
-    } catch (err) {
-      console.error(err);
+    if (!res.ok) {
+      throw new Error("Failed to fetch categories");
     }
+
+    const data = await res.json();
+
+    return (data.categories || data).slice(-4).reverse();
   }
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
+  const {
+    data: categories = [],
+    isLoading,
+    error,
+  } = useQuery({
+  queryKey: ["recentCategories"],
+  queryFn: fetchCategories,
+  staleTime: 1000 * 60 * 5,
+  gcTime: 1000 * 60 * 30,
+  refetchOnWindowFocus: false,
+  refetchOnMount: false,
+});
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>Error loading categories</p>;
+  }
 
   return (
     <div className="recent-categories">
       <div className="recent-list">
-        {categories.map((cat,index) => (
+        {categories.map((cat, index) => (
           <div
             key={cat._id}
             className="recent-card"
@@ -44,7 +60,6 @@ export default function RecentCategories() {
             }
           >
             <div className="recent-card-nc">
-              {" "}
               <div
                 style={{
                   border: `3px solid ${getBorderColor(index)}`,
@@ -53,8 +68,10 @@ export default function RecentCategories() {
               >
                 {cat.code}
               </div>
+
               <div className="name">{cat.categoryName}</div>
             </div>
+
             <EllipsisVertical size={17} />
           </div>
         ))}

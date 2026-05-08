@@ -20,6 +20,7 @@ import CreateCategoryModal from "./CreateCategoryModal";
 import RecentCategories from "./RecentCategories";
 import CSVScanBox from "./CSVScanBox";
 import ReportModal from "./ReportModal";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Home() {
   const navigate = useNavigate();

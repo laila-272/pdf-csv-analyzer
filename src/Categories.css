@@ -297,7 +297,7 @@
 
  .add-file {
    width: 143px;
-   height: 103px;
+   height: 78px;
    border: #DFDFDF 1px solid;
    border-radius: 4px;
    display: flex;
@@ -308,15 +308,15 @@
  }
 
  .add-file button {
-   width: 42px;
-   height: 39px;
+   width: 30px;
+   height: 30px;
    margin-top: 16px;
    display: flex;
    align-items: center;
    justify-content: center;
 
    border: none;
-   border-radius: 8px;
+   border-radius: 4px;
    background: #DFDFDF;
    color: #000000;
    cursor: pointer;
