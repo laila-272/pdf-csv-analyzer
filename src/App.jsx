@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Toaster } from "react-hot-toast";
-
 import { FileProvider } from "./FileContext.jsx";
 import "./Categories.css"
 import "./App.css";
@@ -9,7 +8,6 @@ import Chat from "./Chat.jsx";
 import Layout from "./Layout";
 import SideBar from "./SideBar.jsx";
 import Dashboard from "./Dashboard";
-
 import { createBrowserRouter } from "react-router-dom";
 import { RouterProvider } from "react-router";
 import Home from "./Home.jsx";

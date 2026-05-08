@@ -6,25 +6,15 @@ import line_img from "../src/assets/charts/line.SVG";
 import scatter_img from "../src/assets/charts/scatter.SVG";
 import heat_img from "../src/assets/newphotos/heat.SVG";
 import histo_img from "../src/assets/charts/histo.SVG";
-import  bar_img from "../src/assets/newphotos/bar.SVG";
+import bar_img from "../src/assets/newphotos/bar.SVG";
 import pie_img from "../src/assets/newphotos/pie.SVG";
-import {
-  PanelLeft,
-  CircleX,
-  ShieldCheck,
-  ShieldAlert,
-  ChevronRight,
-  ChevronLeft,
-  FileText,
-  FilePlusCorner,
-  ChartColumn,
-  Check,
-} from "lucide-react";
+
+import { PanelLeft, Check } from "lucide-react";
 export default function CSVColumns() {
   const navigate = useNavigate();
   const { state } = useLocation();
   const { fileId, accessToken, fileName } = state || {};
-
+  const [generating, setGenerating] = useState(false);
   const [charts, setCharts] = useState([]);
   const [selectedCharts, setSelectedCharts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -36,13 +26,13 @@ export default function CSVColumns() {
     histogram: histo_img,
     pie: pie_img,
   };
-   const chartTypeColors = {
+  const chartTypeColors = {
     bar: "#849275",
     line: "#41B6A3",
     scatter: "#7441B6",
     histogram: "#A82F50",
     pie: "#4A5699",
-    heatmap:"#DBA020",
+    heatmap: "#DBA020",
   };
   // ---------------- FETCH CHART OPTIONS ----------------
   useEffect(() => {
@@ -84,6 +74,8 @@ export default function CSVColumns() {
 
   // ---------------- GENERATE VISUALIZATION ----------------
   async function generateCharts() {
+    setGenerating(true);
+
     try {
       const res = await fetch(`http://localhost:3000/ai/visualize/${fileId}`, {
         method: "POST",
@@ -97,18 +89,18 @@ export default function CSVColumns() {
       });
 
       const data = await res.json();
-      console.log("visualize response:", data);
-      // console.log(data.charts);
+
       if (res.ok) {
         navigate("/dashboard", {
           state: {
             charts: data.charts,
           },
         });
-        
       }
     } catch (err) {
-      console.error("Visualization Error:", err);
+      console.error(err);
+    } finally {
+      setGenerating(false);
     }
   }
 
@@ -123,65 +115,64 @@ export default function CSVColumns() {
         <span>
           Select the charts you want to add to your synthesis dashboard
         </span>
-        <span className="analyze">
-          "{fileName}"analyzed successfully 
-        </span>
+        <span className="analyze">"{fileName}"analyzed successfully</span>
       </div>
 
       {/* LOADING */}
-    {loading && (
-  <>
-    {[...Array(5)].map((_, i) => (
-      <div key={i} className="skeleton-option">
+      {loading && (
+        <>
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="skeleton-option">
+              {/* LEFT */}
+              <div className="skeleton-left">
+                <div className="skeleton-img skeleton-shimmer" />
 
-        {/* LEFT */}
-        <div className="skeleton-left">
-          <div className="skeleton-img skeleton-shimmer" />
+                <div className="skeleton-texts">
+                  <div className="skeleton-title skeleton-shimmer" />
+                  <div className="skeleton-mapping skeleton-shimmer" />
+                </div>
+              </div>
 
-          <div className="skeleton-texts">
-            <div className="skeleton-title skeleton-shimmer" />
-            <div className="skeleton-mapping skeleton-shimmer" />
-          </div>
-        </div>
-
-        {/* RIGHT */}
-        <div className="skeleton-right">
-          <div className="skeleton-label skeleton-shimmer" />
-          <div className="skeleton-checkbox skeleton-shimmer" />
-        </div>
-
-      </div>
-    ))}
-  </>
-)}
+              {/* RIGHT */}
+              <div className="skeleton-right">
+                <div className="skeleton-label skeleton-shimmer" />
+                <div className="skeleton-checkbox skeleton-shimmer" />
+              </div>
+            </div>
+          ))}
+        </>
+      )}
 
       {/* CHART LIST */}
       <div className="optionss">
         {!loading &&
           charts.map((chart) => (
-            <div key={chart.id} style={{
-    border: `2px solid ${
-      chartTypeColors[chart.chartType?.toLowerCase()] || "#ddd"
-    }`,
-  }} className="option">
+            <div
+              key={chart.id}
+              style={{
+                border: `2px solid ${
+                  chartTypeColors[chart.chartType?.toLowerCase()] || "#ddd"
+                }`,
+              }}
+              className="option"
+            >
               <div className="option-content">
                 <div className="chart-desc">
-                  <div className="img" >
+                  <div className="img">
                     <img
-                    
                       src={chartImages[chart.chartType?.toLowerCase()]}
                       alt={chart.chartType}
                     />
-                   <span
-                  className="chart-type"
-                  style={{
-                    color: chartTypeColors[chart.chartType] || "#333",
-                    fontWeight: "600",
-                    fontSize: "18px",
-                  }}
-                >
-                  {chart.chartType}
-                </span>
+                    <span
+                      className="chart-type"
+                      style={{
+                        color: chartTypeColors[chart.chartType] || "#333",
+                        fontWeight: "600",
+                        fontSize: "18px",
+                      }}
+                    >
+                      {chart.chartType}
+                    </span>
                   </div>
                   <div className="titlle">
                     {chart.title}
@@ -211,19 +202,21 @@ export default function CSVColumns() {
           ))}
       </div>
       {/* BUTTON */}
-      <div className="footerparent"><div className="footer">
-        <span style={{ color: "#7F7F7F" }}>AI-powered chart suggestions</span>
-        <div className="chartbtns">
-          <button className="cancell">cancel</button>
-          <button
-            className="create"
-            onClick={generateCharts}
-            disabled={selectedCharts.length === 0}
-          >
-            Create Dashboard
-          </button>
+      <div className="footerparent">
+        <div className="footer">
+          <span style={{ color: "#7F7F7F" }}>AI-powered chart suggestions</span>
+          <div className="chartbtns">
+            <button className="cancell">cancel</button>
+            <button
+              className="create"
+              onClick={generateCharts}
+              disabled={selectedCharts.length === 0 || generating}
+            >
+              {generating ? "Generating..." : "Create Dashboard"}
+            </button>
+          </div>
         </div>
-      </div></div>
+      </div>
     </div>
   );
 }

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { PanelLeft, Download, Check } from "lucide-react";
 import Plot from "react-plotly.js";
-
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import Plotly from "plotly.js-dist";
@@ -16,7 +15,8 @@ export default function Dashboard() {
 
   const [charts, setCharts] = useState(chartsFromState);
   const [selectedCharts, setSelectedCharts] = useState([]);
-  const [loading, setLoading] = useState(false);
+const [loading, setLoading] = useState(true);
+
 
   const chartTypeColors = {
     bar: "#849275",

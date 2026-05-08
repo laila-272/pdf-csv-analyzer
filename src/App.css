@@ -2122,7 +2122,22 @@ textarea {
   width: 180px;
   height: 12px;
 }
+.create:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.linechart {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeIn 0.4s ease forwards;
+}
 
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 /* RIGHT SIDE (add to dashboard) */
 .skeleton-right {
   display: flex;

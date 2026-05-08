@@ -36,7 +36,7 @@ export default function CSVScanBox({ fetchRecent, fetchGeneralFiles }) {
   // ── Upload ──────────────────────────────────────────────────────────────
 
   async function uploadFile(file) {
-    updateDragText("csv", "Uploading CSV...");
+    updateDragText("Uploading CSV...");
     const formData = new FormData();
     formData.append("file", file);
 
@@ -61,8 +61,7 @@ export default function CSVScanBox({ fetchRecent, fetchGeneralFiles }) {
       }
 
       setCsvFiles([{ _id: uploaded._id, name: file.name, originalFile: file }]);
-      await fetchRecent();
-      window.dispatchEvent(new Event("general-update"));
+     
       updateDragText("csv", "CSV selected for scanning");
     } catch (err) {
       console.error(err);
