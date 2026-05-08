@@ -1,62 +1,88 @@
+import {
+  createContext,
+  useState,
+  useCallback,
+  useEffect,
+  useContext,
+} from "react";
 
-import { createContext, useState, useCallback } from "react";
-
+import { AuthContext } from "./AuthContext";
 export const FileContext = createContext();
 
-export const GENERAL_CATEGORY_ID = "69fb6d2d46869a9d3b005e5d";
-
 export function FileProvider({ children }) {
-  const [pdfFiles, setPdfFiles]           = useState([]);
-  const [csvFiles, setCsvFiles]           = useState([]);
-  const [recentFiles, setRecentFiles]     = useState([]);
-  const [generalFiles, setGeneralFiles]   = useState([]);
-  const [categories, setCategories]       = useState([]);
+  const [pdfFiles, setPdfFiles] = useState([]);
+  const [csvFiles, setCsvFiles] = useState([]);
+  const [recentFiles, setRecentFiles] = useState([]);
+  const [generalFiles, setGeneralFiles] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [categoryFiles, setCategoryFiles] = useState({});
-
+  const [generalCategoryId, setGeneralCategoryId] = useState(null);
   // ── Network fetches ──────────────────────────────────────────────────────
-
-  const fetchRecentFiles = useCallback(async (accessToken) => {
+  const { token } = useContext(AuthContext);
+  const fetchRecentFiles = useCallback(async (token) => {
     try {
-      const res  = await fetch("http://localhost:3000/upload/recent", {
-        headers: { Authorization: `bearer ${accessToken}` },
+      const res = await fetch("http://localhost:3000/upload/recent", {
+        headers: { Authorization: `bearer ${token}` },
       });
       const data = await res.json();
       setRecentFiles(data.files || []);
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error(err);
+    }
   }, []);
 
-  const fetchGeneralFiles = useCallback(async (accessToken) => {
+  const fetchGeneralFiles = useCallback(async (token, categoryId) => {
+    if (!categoryId) return;
+
     try {
-      const res  = await fetch(
-        `http://localhost:3000/upload/files/${GENERAL_CATEGORY_ID}`,
-        { headers: { Authorization: `bearer ${accessToken}` } }
+      const res = await fetch(
+        `http://localhost:3000/upload/files/${categoryId}`,
+        { headers: { Authorization: `bearer ${token}` } },
       );
+
       const data = await res.json();
-      if (data.filesWithUrls) setGeneralFiles(data.filesWithUrls);
-    } catch (err) { console.error(err); }
+
+      if (data.filesWithUrls) {
+        setGeneralFiles(data.filesWithUrls);
+      }
+    } catch (err) {
+      console.error(err);
+    }
   }, []);
 
-  const fetchCategories = useCallback(async (accessToken) => {
+  const fetchCategories = useCallback(async (token) => {
     try {
-      const res  = await fetch("http://localhost:3000/upload/categories", {
-        headers: { Authorization: `bearer ${accessToken}` },
+      const res = await fetch("http://localhost:3000/upload/categories", {
+        headers: { Authorization: `bearer ${token}` },
       });
+
       const data = await res.json();
       console.log("Fetched categories:", data.categories);
-      setCategories(data.categories || []);
-    } catch (err) { console.error(err); }
+      const categories = data.categories || [];
+      setCategories(categories);
+
+      const general = categories.find(
+        (c) => c.categoryName === "General Category",
+      );
+
+      setGeneralCategoryId(general?._id || null);
+    } catch (err) {
+      console.error(err);
+    }
   }, []);
 
-  const fetchCategoryFiles = useCallback(async (accessToken, categoryId) => {
+  const fetchCategoryFiles = useCallback(async (token, categoryId) => {
     try {
-      const res  = await fetch(
+      const res = await fetch(
         `http://localhost:3000/upload/files/${categoryId}`,
-        { headers: { Authorization: `bearer ${accessToken}` } }
+        { headers: { Authorization: `bearer ${token}` } },
       );
       const data = await res.json();
       const files = data.filesWithUrls || data.files || [];
       setCategoryFiles((prev) => ({ ...prev, [categoryId]: files }));
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error(err);
+    }
   }, []);
 
   // ── Optimistic helpers ───────────────────────────────────────────────────
@@ -64,15 +90,15 @@ export function FileProvider({ children }) {
   /** After any upload → add to recentFiles + generalFiles + general bucket instantly */
   const optimisticAddFile = useCallback((file) => {
     setRecentFiles((prev) =>
-      prev.find((f) => f._id === file._id) ? prev : [file, ...prev]
+      prev.find((f) => f._id === file._id) ? prev : [file, ...prev],
     );
     setGeneralFiles((prev) =>
-      prev.find((f) => f._id === file._id) ? prev : [file, ...prev]
+      prev.find((f) => f._id === file._id) ? prev : [file, ...prev],
     );
     setCategoryFiles((prev) => {
-      const existing = prev[GENERAL_CATEGORY_ID] || [];
+      const existing = prev[generalCategoryId] || [];
       if (existing.find((f) => f._id === file._id)) return prev;
-      return { ...prev, [GENERAL_CATEGORY_ID]: [file, ...existing] };
+      return { ...prev, [generalCategoryId]: [file, ...existing] };
     });
   }, []);
 
@@ -80,11 +106,13 @@ export function FileProvider({ children }) {
   const optimisticMoveToCategory = useCallback((file, targetCategoryId) => {
     setGeneralFiles((prev) => prev.filter((f) => f._id !== file._id));
     setCategoryFiles((prev) => {
-      const genFiles = (prev[GENERAL_CATEGORY_ID] || []).filter((f) => f._id !== file._id);
+      const genFiles = (prev[generalCategoryId] || []).filter(
+        (f) => f._id !== file._id,
+      );
       const catFiles = prev[targetCategoryId] || [];
       return {
         ...prev,
-        [GENERAL_CATEGORY_ID]: genFiles,
+        [generalCategoryId]: genFiles,
         [targetCategoryId]: catFiles.find((f) => f._id === file._id)
           ? catFiles
           : [file, ...catFiles],
@@ -95,14 +123,18 @@ export function FileProvider({ children }) {
   /** Create new category + move file into it from general */
   const optimisticAddCategoryWithFile = useCallback((newCategory, file) => {
     setCategories((prev) =>
-      prev.find((c) => c._id === newCategory._id) ? prev : [...prev, newCategory]
+      prev.find((c) => c._id === newCategory._id)
+        ? prev
+        : [...prev, newCategory],
     );
     setGeneralFiles((prev) => prev.filter((f) => f._id !== file._id));
     setCategoryFiles((prev) => {
-      const genFiles = (prev[GENERAL_CATEGORY_ID] || []).filter((f) => f._id !== file._id);
+      const genFiles = (prev[generalCategoryId] || []).filter(
+        (f) => f._id !== file._id,
+      );
       return {
         ...prev,
-        [GENERAL_CATEGORY_ID]: genFiles,
+        [generalCategoryId]: genFiles,
         [newCategory._id]: [file],
       };
     });
@@ -116,7 +148,7 @@ export function FileProvider({ children }) {
       return { ...prev, [categoryId]: [file, ...existing] };
     });
     setRecentFiles((prev) =>
-      prev.find((f) => f._id === file._id) ? prev : [file, ...prev]
+      prev.find((f) => f._id === file._id) ? prev : [file, ...prev],
     );
   }, []);
 
@@ -136,7 +168,7 @@ export function FileProvider({ children }) {
    * Called from Sidebar delete.
    */
   const optimisticRemoveFile = useCallback((fileId) => {
-    setRecentFiles((prev)  => prev.filter((f) => f._id !== fileId));
+    setRecentFiles((prev) => prev.filter((f) => f._id !== fileId));
     setGeneralFiles((prev) => prev.filter((f) => f._id !== fileId));
     setCategoryFiles((prev) => {
       const next = {};
@@ -146,20 +178,30 @@ export function FileProvider({ children }) {
       return next;
     });
   }, []);
-
+  useEffect(() => {
+    if (generalCategoryId && token) {
+      fetchGeneralFiles(token, generalCategoryId);
+    }
+  }, [generalCategoryId, token, fetchGeneralFiles]);
   return (
     <FileContext.Provider
       value={{
         // original
-        pdfFiles, setPdfFiles,
-        csvFiles, setCsvFiles,
-        recentFiles, setRecentFiles,
-        generalFiles, setGeneralFiles,
+        pdfFiles,
+        setPdfFiles,
+        csvFiles,
+        setCsvFiles,
+        recentFiles,
+        setRecentFiles,
+        generalFiles,
+        setGeneralFiles,
         fetchRecentFiles,
         fetchGeneralFiles,
         // new shared state
-        categories, setCategories,
-        categoryFiles, setCategoryFiles,
+        categories,
+        setCategories,
+        categoryFiles,
+        setCategoryFiles,
         fetchCategories,
         fetchCategoryFiles,
         // optimistic helpers
@@ -168,7 +210,7 @@ export function FileProvider({ children }) {
         optimisticAddCategoryWithFile,
         optimisticAddFileToCategory,
         optimisticRemoveCategory,
-        optimisticRemoveFile,           // ← NEW
+        optimisticRemoveFile, // ← NEW
       }}
     >
       {children}
