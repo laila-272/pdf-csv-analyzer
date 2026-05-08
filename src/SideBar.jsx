@@ -289,7 +289,7 @@ export default function Sidebar() {
   }
   function handleLogoClick() {
     navigate("/home");
-    window.location.reload();
+   
   }
 
   // ── Render ─────────────────────────────────────────────────────────────

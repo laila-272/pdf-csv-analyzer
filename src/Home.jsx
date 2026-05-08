@@ -204,7 +204,7 @@ export default function Home() {
     const currentFile = pdfFiles[pdfFiles.length - 1];
     const fileUrl = URL.createObjectURL(currentFile.originalFile);
     navigate("/Chat", {
-      state: { fileUrl, fileId: currentFile?._id, accessToken },
+      state: { fileUrl, fileId: currentFile?._id, accessToken ,fileName: currentFile.originalFile.name},
     });
   }
 

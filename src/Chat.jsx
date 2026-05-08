@@ -33,7 +33,9 @@ const [thinkingStep, setThinkingStep] = useState("");
   const [summaryError, setSummaryError] = useState(false);
   const { fileUrl, fileId } = location.state || {};
   const accessToken = location.state?.accessToken || "";
-
+const [fileName, setFileName] = useState("");
+const [currentFileUrl, setCurrentFileUrl] = useState("");
+const [currentFileName, setCurrentFileName] = useState("");
   //summarize
   const handleSummarize = async () => {
     if (!fileId) return;
@@ -52,11 +54,15 @@ const [thinkingStep, setThinkingStep] = useState("");
         throw new Error("Server error");
       }
       const data = await res.json();
- await new Promise((r) => setTimeout(r, 3000));
+      console.log("Summary response:", data);
+      setFileName(data.fileName || "Unnamed File");
+      // await new Promise((r) => setTimeout(r, 3000));
       // السيرفر ممكن يرد بأي اسم مفتاح
       const sum = data.summary;
 
       setSummary(sum || "No summary available.");
+      setCurrentFileUrl(data.fileUrl || "");
+      setCurrentFileName(data.fileName || "Unnamed File");
       setMessage(data.message || "");
     } catch (err) {
       console.error(err);
@@ -247,7 +253,7 @@ async function sendQuestion() {
       />
       <div className="title">
         <PanelLeft size={20} />
-        <span>file name</span>
+        <span>{fileName}</span>
         <div className="closefile" onClick={() => setFileOpen((prev) => !prev)}>
           {" "}
           {fileOpen ? <PanelLeft size={20} /> : <PanelRight size={20} />}
@@ -256,7 +262,7 @@ async function sendQuestion() {
 {loadingSummary ? (
   <div className="loader-container">
     <div className="spinner"></div>
-    <p className="loading-text">Generating insights...</p>
+    <p className="loading-text">Generating summary...</p>
   </div>
 ) : (
   <div className="chatlayout">
@@ -316,7 +322,7 @@ async function sendQuestion() {
           <div className="textbox">
             <div className="title">
               <FileText size={20} />
-              <span>file name</span>
+              <span>{fileName}</span>
             </div>
 
             <div className="inputbox d-flex align-items-center justify-content-between">
@@ -375,19 +381,20 @@ async function sendQuestion() {
                 <ChevronRight size={17} />
               </button>
             </div> */}
-            <div  className="showfile">
-              {fileUrl ? (
-                <iframe
-                  src={fileUrl}
-                  width="100%"
-                  height="100%"
-                  style={{ border: "none" }}
-                />
-              ) : (
-                <span>No file loaded</span>
-              )}
-              <div className="filename"></div>
-            </div>
+          <div className="showfile">
+  {currentFileUrl ? (
+    <iframe
+      src={currentFileUrl}
+      width="100%"
+      height="100%"
+      style={{ border: "none" }}
+    />
+  ) : (
+    <span>No file loaded</span>
+  )}
+
+  
+</div>
           </div>
         )}
       </div>)}
