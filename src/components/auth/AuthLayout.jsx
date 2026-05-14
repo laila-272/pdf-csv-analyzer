@@ -1,6 +1,6 @@
 
-import e1 from "./assets/e1.png";
-import e2 from "./assets/e2.png";
+import e1 from "../../assets/e1.png";
+import e2 from "../../assets/e2.png";
 export default function AuthLayout({ children }) {
   return (
     <div

@@ -1,32 +1,28 @@
-import { useState } from "react";
 import { Toaster } from "react-hot-toast";
-import { FileProvider } from "./FileContext.jsx";
-import "./Categories.css"
-import "./App.css";
-import Search from "./Search.jsx";
-import Chat from "./Chat.jsx";
-import Layout from "./Layout";
-import SideBar from "./SideBar.jsx";
-import Dashboard from "./Dashboard";
-import { createBrowserRouter } from "react-router-dom";
 import { RouterProvider } from "react-router";
-import Home from "./Home.jsx";
-import ForgotPass from "./ForgotPass.jsx";
-import SetPass from "./SetPass.jsx";
-import SignUp from "./SignUp.jsx";
-import Code from "./Code.jsx";
-import PassCode from "./PassCode.jsx";
-import AuthLayout from "./AuthLayout.jsx";
-import PassSuccess from "./PassSuccess.jsx";
-import Login from "./Login.jsx";
-import Categories from "./Categories.jsx";
-import UpdateProfile from "./UpdateProfile.jsx";
-import CategoryFiles from "./CategoryFiles.jsx";
-import { Navigate } from "react-router-dom";
-import { DragTextProvider } from "./DragTextContext";
+import { createBrowserRouter, Navigate } from "react-router-dom";
+import "./App.css";
+import "./Categories.css";
+import AuthLayout from "./components/auth/AuthLayout.jsx";
+import Code from "./components/auth/Code.jsx";
+import ForgotPass from "./components/auth/ForgotPass.jsx";
+import Login from "./components/auth/Login.jsx";
+import PassCode from "./components/auth/PassCode.jsx";
+import PassSuccess from "./components/auth/PassSuccess.jsx";
+import SetPass from "./components/auth/SetPass.jsx";
+import SignUp from "./components/auth/SignUp.jsx";
+import Categories from "./components/categories/Categories.jsx";
+import CategoryFiles from "./components/categories/CategoryFiles.jsx";
+import Chat from "./components/layout/Chat.jsx";
+import Dashboard from "./components/dashboard/Dashboard.jsx";
+import Home from "./components/dashboard/Home.jsx";
+import Search from "./components/layout/Search.jsx";
+import CSVColumns from "./components/files/CSVColumns.jsx";
+import AuthProvider from "./context/AuthContext.jsx";
+import { DragTextProvider } from "./context/DragTextContext.jsx";
+import { FileProvider } from "./context/FileContext.jsx";
+import Layout from "./Layout";
 import ProtectedRoute from "./ProtectedRoute";
-import AuthProvider from "./AuthContext";
-import CSVColumns from "./CSVColumns";
 
 const router = createBrowserRouter([
   {
@@ -83,11 +79,14 @@ const router = createBrowserRouter([
       { path: "", element: <Home /> },
       { path: "/home", element: <Home /> },
       { path: "/Categories", element: <Categories /> },
-      { path: "/category-files/:categoryId/:categoryName", element: <CategoryFiles /> },
+      {
+        path: "/category-files/:categoryId/:categoryName",
+        element: <CategoryFiles />,
+      },
       { path: "/search", element: <Search /> },
       { path: "/Chat", element: <Chat /> },
-      {path:"/CSVColumns" ,element:<CSVColumns/>},
-      {path:"/Dashboard" ,element:<Dashboard/>}
+      { path: "/CSVColumns", element: <CSVColumns /> },
+      { path: "/Dashboard", element: <Dashboard /> },
     ],
   },
 ]);
@@ -95,10 +94,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <AuthProvider>
-
       <DragTextProvider>
         <FileProvider>
-            <Toaster position="top-center" />
+          <Toaster position="top-center" />
           <RouterProvider router={router} />
         </FileProvider>
       </DragTextProvider>

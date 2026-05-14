@@ -1,8 +1,8 @@
 import React from "react";
-import img from "./assets/Group9.jpg";
+// import img from "./assets/Group9.jpg";
 import AuthLayout from "./AuthLayout";
-import e2 from "./assets/e2.png";
-import e1 from "./assets/e1.png";
+// import e2 from "./assets/e2.png";
+// import e1 from "./assets/e1.png";
 import { Formik, useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";

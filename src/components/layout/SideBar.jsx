@@ -1,25 +1,25 @@
-import { useState, useRef, useEffect, useContext } from "react";
-import { FileContext } from "./FileContext";
-import { NavLink, useNavigate } from "react-router-dom";
-import AddCategoryModal from "./AddCategoryModal";
-import { AuthContext } from "./AuthContext";
-import { DragTextContext } from "./DragTextContext";
 import {
-  Search,
-  Plus,
-  Settings,
-  Sun,
-  LogOut,
-  FileText,
-  House,
+  ChartColumn,
   ChevronDown,
   ChevronRight,
   EllipsisVertical,
-  Trash2,
+  FileText,
+  House,
   LayoutGrid,
-  ChartColumn,
+  LogOut,
+  Plus,
+  Search,
+  Settings,
+  Sun,
+  Trash2,
 } from "lucide-react";
-import logoo from "./assets/logoo.svg";
+import { useContext, useEffect, useRef, useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import logoo from "../../assets/logoo.svg";
+import { AuthContext } from "../../context/AuthContext";
+import AddCategoryModal from "../categories/AddCategoryModal";
+import { DragTextContext } from "../../context/DragTextContext";
+import { FileContext } from "../../context/FileContext";
 
 export default function Sidebar() {
   const { setDragtext } = useContext(DragTextContext);
@@ -289,7 +289,6 @@ export default function Sidebar() {
   }
   function handleLogoClick() {
     navigate("/home");
-   
   }
 
   // ── Render ─────────────────────────────────────────────────────────────
@@ -581,55 +580,53 @@ export default function Sidebar() {
                             marginBottom: "6px",
                             paddingLeft: "4px",
                           }}
-                        >
-                          
-                        </div>
+                        ></div>
                       )}
-                     {catFiles.map((file, index) => {
-  const isCSV =
-    file.fileName?.endsWith(".csv") ||
-    file.type === "csv" ||
-    file.fileType === "csv";
+                      {catFiles.map((file, index) => {
+                        const isCSV =
+                          file.fileName?.endsWith(".csv") ||
+                          file.type === "csv" ||
+                          file.fileType === "csv";
 
-  const nameToShow =
-    file.fileName || file.name || "Untitled File";
+                        const nameToShow =
+                          file.fileName || file.name || "Untitled File";
 
-  const shortName =
-    nameToShow.length > 15
-      ? nameToShow.slice(0, 15) + "..."
-      : nameToShow;
+                        const shortName =
+                          nameToShow.length > 15
+                            ? nameToShow.slice(0, 15) + "..."
+                            : nameToShow;
 
-  return (
-    <div
-      key={file._id || index}
-      className="file-item"
-      style={{ cursor: "pointer" }}
-      onClick={() => {
-        navigate(isCSV ? "/dashboard" : "/chat", {
-          state: {
-            fileUrl: file.url,
-            fileId: file._id,
-            accessToken,
-          },
-        });
-      }}
-    >
-      {isCSV ? (
-        <ChartColumn size={20} />
-      ) : (
-        <FileText size={20} />
-      )}
+                        return (
+                          <div
+                            key={file._id || index}
+                            className="file-item"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => {
+                              navigate(isCSV ? "/dashboard" : "/chat", {
+                                state: {
+                                  fileUrl: file.url,
+                                  fileId: file._id,
+                                  accessToken,
+                                },
+                              });
+                            }}
+                          >
+                            {isCSV ? (
+                              <ChartColumn size={20} />
+                            ) : (
+                              <FileText size={20} />
+                            )}
 
-      {shortName}
-    </div>
-  );
-})}
+                            {shortName}
+                          </div>
+                        );
+                      })}
                       {/* <button */}
-                        {/* className="upload-to-btn" */}
-                        {/* onClick={() => handleCategoryUploadClick(cat._id)} */}
+                      {/* className="upload-to-btn" */}
+                      {/* onClick={() => handleCategoryUploadClick(cat._id)} */}
                       {/* > */}
-                        {/* <Plus size={16} /> */}
-                        {/* Upload File */}
+                      {/* <Plus size={16} /> */}
+                      {/* Upload File */}
                       {/* </button> */}
                     </div>
                   )}
@@ -638,8 +635,7 @@ export default function Sidebar() {
             })}
 
             {addingCategoryModal && (
-              <AddCategoryModal onClose={() => setAddingCategoryModal(false)} 
-              />
+              <AddCategoryModal onClose={() => setAddingCategoryModal(false)} />
             )}
           </div>
         </div>

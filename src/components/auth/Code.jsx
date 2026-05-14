@@ -1,15 +1,12 @@
-
-
-import Authlayout from "./AuthLayout.jsx";
+import axios from "axios";
+import { useRef, useState } from "react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import Authcard from "./AuthCard.jsx";
 import AuthHeader from "./AuthHeader.jsx";
-import { useNavigate } from "react-router-dom";
-import { useRef, useState } from "react";
-import axios from "axios";
-import toast from "react-hot-toast";
+import Authlayout from "./AuthLayout.jsx";
 
 export default function Code() {
-  
   const navigate = useNavigate();
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputsRef = useRef([]);
@@ -18,21 +15,26 @@ export default function Code() {
     const OTP = otp.join(""); // نجمع الستة أرقام مع بعض
 
     if (OTP.length < 6) {
-toast.error("Please enter complete OTP");      return;
+      toast.error("Please enter complete OTP");
+      return;
     }
 
     try {
-     const response= await axios.patch("http://localhost:3000/users/confirmEmail", {
-        email,
-        OTP,
+      const response = await axios.patch(
+        "http://localhost:3000/users/confirmEmail",
+        {
+          email,
+          OTP,
+        },
+      );
+      toast.success("Email verified successfully! 🎉", {
+        duration: 1500,
       });
-toast.success("Email verified successfully! 🎉", {
-  duration: 1500,
-});
 
-     setTimeout(() => navigate("/login"), 1800);
+      setTimeout(() => navigate("/login"), 1800);
     } catch (err) {
-toast.error(err.response?.data?.message || "Invalid OTP");    }
+      toast.error(err.response?.data?.message || "Invalid OTP");
+    }
   }
   const handleChange = (value, index) => {
     if (!/^\d?$/.test(value)) return;
@@ -54,9 +56,7 @@ toast.error(err.response?.data?.message || "Invalid OTP");    }
 
   return (
     <Authlayout>
-    
-
-      <Authcard  width="498px" height="345px" marginBottom="77px">
+      <Authcard width="498px" height="345px" marginBottom="77px">
         <AuthHeader
           title="we emailed you a code"
           subtitle={`check your inbox at ${localStorage.getItem("email")}`}
@@ -95,11 +95,7 @@ toast.error(err.response?.data?.message || "Invalid OTP");    }
             ))}
           </div>
 
-          <button
-            onClick={confirmOTP}
-            type="button"
-            className="auth-button"
-          >
+          <button onClick={confirmOTP} type="button" className="auth-button">
             continue
           </button>
           <div
@@ -114,8 +110,7 @@ toast.error(err.response?.data?.message || "Invalid OTP");    }
           >
             <button
               onClick={() => window.open("https://mail.google.com", "_blank")}
-                            className="mini-btn"
-
+              className="mini-btn"
             >
               open gmail
             </button>
@@ -129,15 +124,11 @@ toast.error(err.response?.data?.message || "Invalid OTP");    }
         </form>
       </Authcard>
       <p style={{ width: "588px", textAlign: "center", color: "#707070" }}>
-        continuing as <br/>
-        email22@gmail.com<br/>
+        continuing as <br />
+        email22@gmail.com
+        <br />
         log in with another email here
-
-
-
-
       </p>
-    
     </Authlayout>
   );
 }

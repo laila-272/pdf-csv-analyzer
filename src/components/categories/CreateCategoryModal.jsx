@@ -7,8 +7,8 @@ import {
   CircleCheck,
   CirclePlus,
 } from "lucide-react";
-import "./Categories.css";
-import { FileContext } from "./FileContext";
+import "../../categories.css";
+import { FileContext } from "../../context/FileContext";
 import toast from "react-hot-toast";
 
 export default function CreateCategoryModal({

@@ -2,9 +2,9 @@
 import { useEffect, useState, useRef, useContext } from "react";
 import { PanelLeft, FileText, Plus } from "lucide-react";
 import { useParams } from "react-router-dom";
-import "./Categories.css";
+import "../../categories.css";
 import axios from "axios";
-import { FileContext } from "./FileContext";
+import { FileContext } from "../../context/FileContext";
 
 export default function CategoryFiles() {
   const { categoryId, categoryName } = useParams();

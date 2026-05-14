@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { ShieldCheck, ShieldAlert, ChartColumn } from "lucide-react";
-import { FileContext } from "./FileContext";
-import { DragTextContext } from "./DragTextContext";
-import { useCategories } from "./useCategories";
-import CreateCategoryModal from "./CreateCategoryModal";
-import ReportModal from "./ReportModal";
 import Lottie from "lottie-react";
-import water from "./assets/water.json";
+import { ChartColumn, ShieldAlert, ShieldCheck } from "lucide-react";
+import { useContext, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import water from "../../assets/water.json";
+import { DragTextContext } from "../../context/DragTextContext";
+import { FileContext } from "../../context/FileContext";
+import { useCategories } from "../../hooks/useCategories";
+import CreateCategoryModal from "../categories/CreateCategoryModal";
+import ReportModal from "./ReportModal";
 
 export default function CSVScanBox({ fetchRecent, fetchGeneralFiles }) {
   const navigate = useNavigate();
@@ -61,7 +61,7 @@ export default function CSVScanBox({ fetchRecent, fetchGeneralFiles }) {
       }
 
       setCsvFiles([{ _id: uploaded._id, name: file.name, originalFile: file }]);
-     
+
       updateDragText("csv", "CSV selected for scanning");
     } catch (err) {
       console.error(err);

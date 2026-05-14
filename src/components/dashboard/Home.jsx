@@ -1,26 +1,25 @@
-import { useEffect, useRef, useState, useContext, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  PanelLeft,
-  ShieldCheck,
-  ShieldAlert,
-  ChevronRight,
-  ChevronLeft,
-  FileText,
-  FilePlusCorner,
-  ChartColumn,
-} from "lucide-react";
 import Lottie from "lottie-react";
-import water from "./assets/water.json";
+import {
+  ChartColumn,
+  ChevronLeft,
+  ChevronRight,
+  FilePlusCorner,
+  FileText,
+  PanelLeft,
+  ShieldAlert,
+  ShieldCheck,
+} from "lucide-react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import water from "../../assets/water.json";
 
-import { FileContext } from "./FileContext";
-import { DragTextContext } from "./DragTextContext";
-import { useCategories } from "./useCategories";
-import CreateCategoryModal from "./CreateCategoryModal";
+import { DragTextContext } from "../../context/DragTextContext";
+import { FileContext } from "../../context/FileContext";
+import { useCategories } from "../../hooks/useCategories";
+import CSVScanBox from "../files/CSVScanBox";
+import ReportModal from "../files/ReportModal";
+import CreateCategoryModal from "../categories/CreateCategoryModal";
 import RecentCategories from "./RecentCategories";
-import CSVScanBox from "./CSVScanBox";
-import ReportModal from "./ReportModal";
-import { useQuery } from "@tanstack/react-query";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -204,7 +203,12 @@ export default function Home() {
     const currentFile = pdfFiles[pdfFiles.length - 1];
     const fileUrl = URL.createObjectURL(currentFile.originalFile);
     navigate("/Chat", {
-      state: { fileUrl, fileId: currentFile?._id, accessToken ,fileName: currentFile.originalFile.name},
+      state: {
+        fileUrl,
+        fileId: currentFile?._id,
+        accessToken,
+        fileName: currentFile.originalFile.name,
+      },
     });
   }
 

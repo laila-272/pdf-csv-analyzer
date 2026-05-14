@@ -1,15 +1,14 @@
+import axios from "axios";
+import { useFormik } from "formik";
 import React from "react";
-import img from "./assets/logo.jpg";
-import { Formik, useFormik } from "formik";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
-import Authlayout from "./AuthLayout.jsx";
 import Authcard from "./AuthCard.jsx";
 import AuthHeader from "./AuthHeader.jsx";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import AuthForm from "./AuthForm";
-import toast from "react-hot-toast";export default function Login() {
-    const [loading, setLoading] = React.useState(false);
+import Authlayout from "./AuthLayout.jsx";
+export default function Login() {
+  const [loading, setLoading] = React.useState(false);
   const navigate = useNavigate();
   let user = {
     email: "",
@@ -22,12 +21,12 @@ import toast from "react-hot-toast";export default function Login() {
       email: Yup.string()
         .email("Invalid email address")
         .required("Email is required"),
-       password: Yup.string()
-          .matches(
-            /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, 
-            "Password must be at least 8 characters, include letters and numbers"
-          )
-          .required("Password is required"),
+      password: Yup.string()
+        .matches(
+          /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
+          "Password must be at least 8 characters, include letters and numbers",
+        )
+        .required("Password is required"),
     }),
     onSubmit: async (values, { setSubmitting }) => {
       setLoading(true);
@@ -38,21 +37,22 @@ import toast from "react-hot-toast";export default function Login() {
         );
         // لو الدخول ناجح
         console.log(response.data);
-toast.success("Login successful!");        localStorage.setItem("accessToken", response.data.accessToken);
+        toast.success("Login successful!");
+        localStorage.setItem("accessToken", response.data.accessToken);
         window.dispatchEvent(new Event("auth-change"));
 
-         setTimeout(() => {
-  navigate("/home");
-}, 1000);
+        setTimeout(() => {
+          navigate("/home");
+        }, 1000);
         // ممكن تخزن التوكن أو تعمل redirect
         // localStorage.setItem("token", response.data.token);
         // navigate("/dashboard");
       } catch (error) {
         console.error(error);
-       toast.error(
-  error.response?.data?.message ||
-    "Login failed. Check your credentials."
-);
+        toast.error(
+          error.response?.data?.message ||
+            "Login failed. Check your credentials.",
+        );
       } finally {
         setSubmitting(false);
         setLoading(false);
@@ -67,16 +67,13 @@ toast.success("Login successful!");        localStorage.setItem("accessToken", r
           title="welcome to DeepGuardX"
           subtitle="login or create an account"
         />
-        <form
-          onSubmit={login.handleSubmit}
-          className="auth-form"
-        >
+        <form onSubmit={login.handleSubmit} className="auth-form">
           <input
             name="email"
             value={login.values.email}
             onChange={login.handleChange}
             onBlur={login.handleBlur}
-             className="auth-input"
+            className="auth-input"
             type="email"
             placeholder="email address"
           />
@@ -90,7 +87,7 @@ toast.success("Login successful!");        localStorage.setItem("accessToken", r
             value={login.values.password}
             onChange={login.handleChange}
             onBlur={login.handleBlur}
-             className="auth-input"
+            className="auth-input"
             type="password"
             placeholder="password"
           />
@@ -100,10 +97,10 @@ toast.success("Login successful!");        localStorage.setItem("accessToken", r
             </div>
           )}
 
-          <div
-           className="auth-links"
-          >
-            <span  onClick={() => navigate("/forgotpass")}>forgot password?</span>
+          <div className="auth-links">
+            <span onClick={() => navigate("/forgotpass")}>
+              forgot password?
+            </span>
             <span
               onClick={() => navigate("/signup")}
               style={{ cursor: "pointer", color: "#113567", fontWeight: "500" }}
@@ -112,9 +109,8 @@ toast.success("Login successful!");        localStorage.setItem("accessToken", r
             </span>
           </div>
           <button type="submit" className="auth-button" disabled={loading}>
-  {loading ? "Logging in..." : "Log In"}
-</button>
-         
+            {loading ? "Logging in..." : "Log In"}
+          </button>
         </form>
       </Authcard>
       <p style={{ width: "588px", textAlign: "center", color: "#707070" }}>

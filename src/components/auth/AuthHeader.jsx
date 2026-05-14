@@ -1,5 +1,5 @@
 import React from "react";
-import img from "./assets/sarsora.SVG";
+import img from "../../assets/sarsora.svg";
 export default function AuthHeader({ title, subtitle }) {
   return (
     <div style={{textAlign: "center", }}>

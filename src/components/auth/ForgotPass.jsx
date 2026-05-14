@@ -1,5 +1,4 @@
 import React from "react";
-import img from "./assets/Group9.jpg";
 import Authlayout from "./AuthLayout.jsx";
 import Authcard from "./AuthCard.jsx";
 import AuthHeader from "./AuthHeader.jsx";
