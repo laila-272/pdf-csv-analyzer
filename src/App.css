@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Jomolhari&display=swap');
 .sidebar {
   width: 220px;
   overflow-y: auto;
@@ -38,8 +40,6 @@
   /* border-radius: 50%; */
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Jomolhari&display=swap');
 
 .jomolhari-regular {
   font-family: "Jomolhari", serif;
