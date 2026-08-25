@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef, useContext } from "react";
 import { PanelLeft, FileText, Plus } from "lucide-react";
 import { useParams } from "react-router-dom";
-import "../../categories.css";
+import "../../Categories.css";
 import axios from "axios";
 import { FileContext } from "../../context/FileContext";
 
