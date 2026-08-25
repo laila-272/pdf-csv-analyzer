@@ -2,7 +2,7 @@ import { PanelLeft, Plus, Trash2 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import "../../categories.css";
+import "../../Categories.css";
 import AddCategoryModal from "./AddCategoryModal";
 import { FileContext } from "../../context/FileContext";
 
