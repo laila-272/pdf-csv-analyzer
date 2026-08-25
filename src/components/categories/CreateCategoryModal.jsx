@@ -7,7 +7,7 @@ import {
   CircleCheck,
   CirclePlus,
 } from "lucide-react";
-import "../../categories.css";
+import "../../Categories.css";
 import { FileContext } from "../../context/FileContext";
 import toast from "react-hot-toast";
 
